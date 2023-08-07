@@ -1,8 +1,11 @@
-package com.sedat.note
+package com.sedat.note.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.sedat.note.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
