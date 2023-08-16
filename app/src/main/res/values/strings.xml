@@ -5,4 +5,7 @@
     <string name="create_note">Create Note</string>
     <string name="search_icon">Search Icon</string>
     <string name="back_button_for_categories">Back Button For Categories</string>
+    <string name="back_btn">Back Button</string>
+    <string name="save_btn">Save Button</string>
+    <string name="title">Title</string>
 </resources>

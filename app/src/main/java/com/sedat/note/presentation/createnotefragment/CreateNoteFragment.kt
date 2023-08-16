@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentCreateNoteBinding
 
@@ -23,6 +24,12 @@ class CreateNoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        listeners()
+    }
+
+    private fun listeners(){
+        binding.backBtn.setOnClickListener { findNavController().popBackStack() }
     }
 
     override fun onDestroyView() {
