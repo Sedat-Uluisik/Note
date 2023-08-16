@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.sedat.note.presentation.homefragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/createNoteFragment"
+        android:name="com.sedat.note.presentation.createnotefragment.CreateNoteFragment"
+        android:label="fragment_create_note"
+        tools:layout="@layout/fragment_create_note" />
+    <fragment
+        android:id="@+id/noteImagesFragment"
+        android:name="com.sedat.note.presentation.noteimagesfragment.NoteImagesFragment"
+        android:label="fragment_note_images"
+        tools:layout="@layout/fragment_note_images" />
+    <fragment
+        android:id="@+id/selectImageFragment"
+        android:name="com.sedat.note.presentation.selectimagefragment.SelectImageFragment"
+        android:label="fragment_select_image"
+        tools:layout="@layout/fragment_select_image" />
+</navigation>
