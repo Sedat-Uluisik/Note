@@ -22,12 +22,12 @@ class NoteRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
             try {
                 val result = dao.saveNote(note)
-                if(result == 1L)
+                if(result != null)
                     emit(Resource.Success((true)))
                 else
                     emit(Resource.Error(context.getString(R.string.note_saved_fail)))
             }catch (e: Exception){
-                emit(Resource.Error(e.message.toString()))
+                emit(Resource.Error(context.getString(R.string.note_saved_fail)))
             }
         }.flowOn(Dispatchers.IO)
     }

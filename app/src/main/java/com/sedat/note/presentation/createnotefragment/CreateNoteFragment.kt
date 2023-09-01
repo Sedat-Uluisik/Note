@@ -4,22 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.sedat.note.databinding.FragmentCreateNoteBinding
 import com.sedat.note.domain.model.Note
-import com.sedat.note.presentation.createnotefragment.adapter.AdapterCreateNote
 import com.sedat.note.presentation.createnotefragment.viewmodel.ViewModelCreateNoteFragment
 import com.sedat.note.util.Resource
+import com.sedat.note.util.afterTextChange
 import com.sedat.note.util.closeKeyboard
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CreateNoteFragment : Fragment() {
@@ -28,8 +29,6 @@ class CreateNoteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ViewModelCreateNoteFragment by viewModels()
-    @Inject
-    lateinit var adapter: AdapterCreateNote
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +48,20 @@ class CreateNoteFragment : Fragment() {
     private fun listeners() = with(binding){
         backBtn.setOnClickListener { findNavController().popBackStack() }
 
+        var job: Job ?= null
+        edtNote.afterTextChange {
+            job?.cancel()
+            job = lifecycleScope.launch {
+                delay(500)
+                if (it.isNotEmpty())
+                    saveBtn.show()
+                else
+                    saveBtn.hide()
+            }
+
+        }
+
+
         saveBtn.setOnClickListener {
             if(edtNote.text.isNotEmpty()){
                 val note = Note(id = 0, rootID = 1, text = edtNote.text.toString(), time = System.currentTimeMillis())
@@ -62,10 +75,12 @@ class CreateNoteFragment : Fragment() {
             when(resource){
                 is Resource.Loading -> progressbar.show()
                 is Resource.Success ->{
+                    saveBtn.hide()
                     progressbar.hide()
                     requireActivity().closeKeyboard()
                 }
                 is Resource.Error ->{
+                    Toast.makeText(requireContext(), resource.message, Toast.LENGTH_LONG).show()
                     progressbar.hide()
                     requireActivity().closeKeyboard()
                 }
