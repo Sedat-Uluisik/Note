@@ -8,4 +8,5 @@
     <string name="back_btn">Back Button</string>
     <string name="save_btn">Save Button</string>
     <string name="title">Title</string>
+    <string name="note_saved_fail">Note Could Note Be Saved</string>
 </resources>
