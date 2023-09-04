@@ -2,6 +2,9 @@ package com.sedat.note.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Entity(tableName = "T_Notes")
 data class Note(
@@ -10,4 +13,10 @@ data class Note(
     var rootID: Int,
     var text: String,
     var time: Long
-)
+){
+    fun convertDate(): String {
+        val date = Date(time)
+        val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        return format.format(date).toString()
+    }
+}

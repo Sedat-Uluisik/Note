@@ -63,7 +63,6 @@ class HomeFragment : Fragment() {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collect{
-                    println("submittttt")
                     adapter.submitList(it)
             }
         }
