@@ -13,8 +13,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentHomeBinding
+import com.sedat.note.domain.model.CustomType
 import com.sedat.note.presentation.homefragment.adapter.AdapterHomeFragment
 import com.sedat.note.presentation.homefragment.viewmodel.ViewModelHomeFragment
+import com.sedat.note.util.CustomAlert
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -53,8 +55,29 @@ class HomeFragment : Fragment() {
 
     private fun listeners(){
         binding.fab.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_createNoteFragment)
+            val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.CREATE_NEW_NOTE)
+            findNavController().navigate(action)
         }
+
+        adapter.itemClick {note ->
+            if(note != null){
+                val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.UPDATE_NOTE)
+                findNavController().navigate(action)
+            }else{
+                CustomAlert(requireContext()).show {
+                    when(it){
+                        CustomAlert.ButtonsClick.ADD_IMAGE ->{
+
+                        }
+                        CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
+                            val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE)
+                            findNavController().navigate(action)
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private fun observeData(){

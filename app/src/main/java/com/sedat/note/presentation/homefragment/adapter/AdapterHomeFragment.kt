@@ -22,14 +22,26 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), _itemClick)
+        holder.itemView.setOnClickListener {
+            _itemClick.invoke(getItem(position))
+        }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: Note) = with(binding){
+        fun bind(note: Note, itemClick: (note: Note?) -> Unit) = with(binding){
             noteText.text = note.text
             noteTimeText.text = note.convertDate()
+
+            moreBtn.setOnClickListener {
+                itemClick.invoke(null)
+            }
         }
+    }
+
+    private var _itemClick: (note: Note?) -> Unit = {}
+    fun itemClick(click: (note: Note?) -> Unit){
+        _itemClick = click
     }
 
     private object DiffUtilHome: DiffUtil.ItemCallback<Note>(){

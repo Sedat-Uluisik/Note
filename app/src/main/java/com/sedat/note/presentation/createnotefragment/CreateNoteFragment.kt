@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.sedat.note.databinding.FragmentCreateNoteBinding
 import com.sedat.note.domain.model.Note
 import com.sedat.note.presentation.createnotefragment.viewmodel.ViewModelCreateNoteFragment
@@ -29,6 +30,7 @@ class CreateNoteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ViewModelCreateNoteFragment by viewModels()
+    private val args: CreateNoteFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +42,9 @@ class CreateNoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val type = args.type
+        println(type)
 
         listeners()
         observeData()

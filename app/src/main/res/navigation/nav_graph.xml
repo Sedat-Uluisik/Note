@@ -18,7 +18,12 @@
         android:id="@+id/createNoteFragment"
         android:name="com.sedat.note.presentation.createnotefragment.CreateNoteFragment"
         android:label="fragment_create_note"
-        tools:layout="@layout/fragment_create_note" />
+        tools:layout="@layout/fragment_create_note" >
+        <argument
+            android:name="type"
+            app:argType="com.sedat.note.domain.model.CustomType"
+            android:defaultValue="CREATE_NEW_NOTE" />
+    </fragment>
     <fragment
         android:id="@+id/noteImagesFragment"
         android:name="com.sedat.note.presentation.noteimagesfragment.NoteImagesFragment"
