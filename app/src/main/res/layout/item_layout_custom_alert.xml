@@ -5,18 +5,36 @@
     android:orientation="vertical"
     android:padding="8dp"
     android:gravity="center"
-    android:background="@android:color/holo_blue_light">
+    android:background="@drawable/custom_alert_dialog_background">
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_add_sub_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_sub_category"/>
+        android:text="@string/add_sub_category"
+        android:padding="4dp"
+        android:layout_margin="4dp"
+        android:textColor="@color/blue_light"
+        android:background="@drawable/btn_green_background"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_add_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/add_image"/>
+        android:text="@string/add_image"
+        android:padding="4dp"
+        android:layout_margin="4dp"
+        android:textColor="@color/blue_light"
+        android:background="@drawable/btn_green_background"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_update_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/update_note"
+        android:padding="4dp"
+        android:layout_margin="4dp"
+        android:textColor="@color/blue_light"
+        android:background="@drawable/btn_green_background"/>
 
 </LinearLayout>

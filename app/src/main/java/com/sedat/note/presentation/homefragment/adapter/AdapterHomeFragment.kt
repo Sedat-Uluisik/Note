@@ -1,16 +1,18 @@
 package com.sedat.note.presentation.homefragment.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sedat.note.databinding.LayoutNoteItemBinding
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import java.util.Date
 import javax.inject.Inject
 
-class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFragment.ViewHolder>(DiffUtilHome) {
+class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo, AdapterHomeFragment.ViewHolder>(DiffUtilHome) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutNoteItemBinding.inflate(
@@ -22,34 +24,46 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), _itemClick)
+        holder.bind(getItem(position), _moreBtnClick, _itemClick)
+
         holder.itemView.setOnClickListener {
-            _itemClick.invoke(getItem(position))
+            if(getItem(position).subNoteList.isNotEmpty())
+                _itemClick.invoke(getItem(position))
         }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: Note, itemClick: (note: Note?) -> Unit) = with(binding){
-            noteText.text = note.text
-            noteTimeText.text = note.convertDate()
+        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit, itemClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
+            noteText.text = note.note.text
+            noteTimeText.text = note.note.convertDate()
+
+            if(note.subNoteList.isNotEmpty())
+                hasSubNoteBtn.visibility = View.VISIBLE
+            else
+                hasSubNoteBtn.visibility = View.GONE
 
             moreBtn.setOnClickListener {
-                itemClick.invoke(null)
+                moreBtnClick.invoke(note)
             }
         }
     }
 
-    private var _itemClick: (note: Note?) -> Unit = {}
-    fun itemClick(click: (note: Note?) -> Unit){
+    private var _moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit = {}
+    fun moreBtnClick(click: (note: NoteWithSubNoteInfo) -> Unit){
+        _moreBtnClick = click
+    }
+
+    private var _itemClick: (note: NoteWithSubNoteInfo) -> Unit = {}
+    fun itemClick(click: (note: NoteWithSubNoteInfo) -> Unit){
         _itemClick = click
     }
 
-    private object DiffUtilHome: DiffUtil.ItemCallback<Note>(){
-        override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-            return oldItem.id == newItem.id
+    private object DiffUtilHome: DiffUtil.ItemCallback<NoteWithSubNoteInfo>(){
+        override fun areItemsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
+            return oldItem.note.id == newItem.note.id
         }
 
-        override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
+        override fun areContentsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
             return oldItem == newItem
         }
 

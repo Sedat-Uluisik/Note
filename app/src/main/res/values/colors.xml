@@ -5,4 +5,6 @@
     <color name="lightBlue">#EFEFEF</color>
     <color name="blue">#2ADAFF</color>
     <color name="grey">#9F9F9F</color>
+    <color name="green">#65D05B</color>
+    <color name="blue_light">#BDF5FF</color>
 </resources>

@@ -1,6 +1,7 @@
 package com.sedat.note.domain.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -12,7 +13,7 @@ data class Note(
     var id: Int,
     var rootID: Int,
     var text: String,
-    var time: Long
+    var time: Long,
 ){
     fun convertDate(): String {
         val date = Date(time)

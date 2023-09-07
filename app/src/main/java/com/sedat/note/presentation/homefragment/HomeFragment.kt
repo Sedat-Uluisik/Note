@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -17,6 +18,8 @@ import com.sedat.note.domain.model.CustomType
 import com.sedat.note.presentation.homefragment.adapter.AdapterHomeFragment
 import com.sedat.note.presentation.homefragment.viewmodel.ViewModelHomeFragment
 import com.sedat.note.util.CustomAlert
+import com.sedat.note.util.hide
+import com.sedat.note.util.show
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -32,6 +35,7 @@ class HomeFragment : Fragment() {
     private val viewModel: ViewModelHomeFragment by viewModels()
     @Inject
     lateinit var adapter: AdapterHomeFragment
+    private var rootIDList: ArrayList<Int> = arrayListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +51,7 @@ class HomeFragment : Fragment() {
         initRecyclerView()
         listeners()
         observeData()
+        onBackPressed()
     }
 
     private fun initRecyclerView() = with(binding){
@@ -59,23 +64,31 @@ class HomeFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        adapter.itemClick {note ->
-            if(note != null){
-                val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.UPDATE_NOTE)
-                findNavController().navigate(action)
-            }else{
-                CustomAlert(requireContext()).show {
-                    when(it){
-                        CustomAlert.ButtonsClick.ADD_IMAGE ->{
+        adapter.moreBtnClick {notNoteWithSubNoteInfo ->
+            CustomAlert(requireContext()).show {
+                when(it){
+                    CustomAlert.ButtonsClick.ADD_IMAGE ->{
 
-                        }
-                        CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
-                            val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE)
-                            findNavController().navigate(action)
-                        }
+                    }
+                    CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = notNoteWithSubNoteInfo.note.id)
+                        findNavController().navigate(action)
+                    }
+                    CustomAlert.ButtonsClick.UPDATE_NOTE ->{
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = notNoteWithSubNoteInfo.note.id)
+                        findNavController().navigate(action)
                     }
                 }
             }
+        }
+
+        adapter.itemClick {noteWithSubNoteInfo ->
+            rootIDList.add(noteWithSubNoteInfo.note.rootID)
+            viewModel.getSubNotes(noteWithSubNoteInfo.note.id)
+        }
+
+        binding.backBtnForSubNotes.setOnClickListener {
+            backBtnClick()
         }
 
     }
@@ -86,9 +99,48 @@ class HomeFragment : Fragment() {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collect{
+                    println("observe submit")
                     adapter.submitList(it)
+                    binding.backBtnForSubNotes.hide()
             }
         }
+
+        viewModel.subNoteList.observe(viewLifecycleOwner){
+            adapter.submitList(it)
+            if(rootIDList.size > 0)
+                binding.backBtnForSubNotes.show()
+        }
+    }
+
+    private fun backBtnClick(){
+        if(rootIDList.size == 1){
+            rootIDList.clear()
+            binding.backBtnForSubNotes.hide()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.noteList()
+                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                    .distinctUntilChanged()
+                    .collect{
+                        println("back btn submit")
+                        adapter.submitList(it)
+                    }
+            }
+        }
+        else{
+            viewModel.getSubNotes(rootIDList.last())
+            rootIDList.removeLast()
+            if(rootIDList.isEmpty())
+                binding.backBtnForSubNotes.hide()
+        }
+    }
+
+    private fun onBackPressed() {
+        val onBackPressCallBack = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backBtnClick()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressCallBack)
     }
 
     override fun onDestroyView() {

@@ -1,8 +1,13 @@
 package com.sedat.note.presentation.homefragment.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import com.sedat.note.domain.repository.NoteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -11,5 +16,11 @@ class ViewModelHomeFragment @Inject constructor(
 ): ViewModel() {
 
     fun noteList() = repository.getMainNotes()
+
+    private var _subNoteList = MutableLiveData<List<NoteWithSubNoteInfo>>()
+    val subNoteList: LiveData<List<NoteWithSubNoteInfo>> get() = _subNoteList
+    fun getSubNotes(rootID: Int) = viewModelScope.launch {
+        _subNoteList.value = repository.getSubNotes(rootID)
+    }
 
 }

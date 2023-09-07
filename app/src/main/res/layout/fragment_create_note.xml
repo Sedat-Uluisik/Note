@@ -50,7 +50,7 @@
         android:padding="18dp"
         android:gravity="top|left"
         android:background="@android:color/transparent"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

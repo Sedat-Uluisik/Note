@@ -11,4 +11,7 @@
     <string name="note_saved_fail">Note Could Note Be Saved</string>
     <string name="add_sub_category">Add Sub Category</string>
     <string name="add_image">Add Image</string>
+    <string name="selected_note_not_found">Selected note not found</string>
+    <string name="note_update_is_not_successful">Note update is not successful</string>
+    <string name="update_note">Update Note</string>
 </resources>
