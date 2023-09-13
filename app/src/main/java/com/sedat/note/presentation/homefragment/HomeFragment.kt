@@ -78,6 +78,9 @@ class HomeFragment : Fragment() {
                         val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = notNoteWithSubNoteInfo.note.id)
                         findNavController().navigate(action)
                     }
+                    CustomAlert.ButtonsClick.DELETE_NOTE ->{
+                        viewModel.deleteCategoryWithSubcategoriesRecursive(notNoteWithSubNoteInfo.note.id)
+                    }
                 }
             }
         }
@@ -99,7 +102,6 @@ class HomeFragment : Fragment() {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collect{
-                    println("observe submit")
                     adapter.submitList(it)
                     binding.backBtnForSubNotes.hide()
             }

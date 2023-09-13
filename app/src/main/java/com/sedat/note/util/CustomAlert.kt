@@ -8,7 +8,7 @@ import com.sedat.note.databinding.ItemLayoutCustomAlertBinding
 
 class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) {
     enum class ButtonsClick{
-        ADD_SUB_NOTE, ADD_IMAGE, UPDATE_NOTE
+        ADD_SUB_NOTE, ADD_IMAGE, UPDATE_NOTE, DELETE_NOTE
     }
 
     private lateinit var onButtonClick: (click: ButtonsClick) -> Unit
@@ -38,6 +38,11 @@ class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) 
 
             btnUpdateNote.setOnClickListener {
                 onButtonClick(ButtonsClick.UPDATE_NOTE)
+                alertDialog.dismiss()
+            }
+
+            btnDeleteNote.setOnClickListener {
+                onButtonClick(ButtonsClick.DELETE_NOTE)
                 alertDialog.dismiss()
             }
         }

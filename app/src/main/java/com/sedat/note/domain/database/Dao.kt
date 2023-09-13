@@ -19,6 +19,10 @@ interface Dao {
     @Query("SELECT * FROM T_Notes WHERE rootID = -1")
     fun getMainNotes(): Flow<List<NoteWithSubNoteInfo>>
 
+    @Transaction
+    @Query("SELECT * FROM T_Notes WHERE id = :noteID")
+    fun getNotes(noteID: Int): NoteWithSubNoteInfo
+
     @Query("SELECT * FROM T_Notes WHERE id = :noteID")
     suspend fun getNoteWithID(noteID: Int): Note
 
@@ -31,5 +35,17 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun createRelationship(relationships: Relationships): Long?
+
+    @Query("DELETE FROM T_Notes WHERE id = :id")
+    suspend fun deleteNote(id: Int)
+
+    @Query("DELETE FROM T_Relationships WHERE id = :id")
+    suspend fun deleteRelationship(id: Int)
+
+    @Transaction
+    suspend fun deleteNoteORSubNotes(noteId: Int, relationshipId: Int){
+        deleteNote(noteId)
+        deleteRelationship(relationshipId)
+    }
 
 }

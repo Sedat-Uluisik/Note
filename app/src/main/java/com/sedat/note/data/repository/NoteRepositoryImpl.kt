@@ -43,6 +43,10 @@ class NoteRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getNotes(noteID: Int): NoteWithSubNoteInfo {
+        return dao.getNotes(noteID)
+    }
+
     override suspend fun getNoteWithID(noteID: Int): Resource<Note> {
         return try {
             val result = dao.getNoteWithID(noteID)
@@ -81,6 +85,10 @@ class NoteRepositoryImpl @Inject constructor(
         }catch (e: Exception){
             Resource.Error(context.getString(R.string.note_saved_fail))
         }
+    }
+
+    override suspend fun deleteNoteORSubNotes(noteId: Int, relationshipId: Int) {
+        dao.deleteNoteORSubNotes(noteId, relationshipId)
     }
 
 
