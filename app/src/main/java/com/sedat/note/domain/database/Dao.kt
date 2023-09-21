@@ -36,11 +36,14 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun createRelationship(relationships: Relationships): Long?
 
+    @Query("SELECT * FROM T_Notes WHERE rootID = :rootId")
+    suspend fun getSubNotesForDeleting(rootId: Int): List<Note>
+
     @Query("DELETE FROM T_Notes WHERE id = :id")
     suspend fun deleteNote(id: Int)
 
-    @Query("DELETE FROM T_Relationships WHERE id = :id")
-    suspend fun deleteRelationship(id: Int)
+    @Query("DELETE FROM T_Relationships WHERE subID = :subId")
+    suspend fun deleteRelationship(subId: Int)
 
     @Transaction
     suspend fun deleteNoteORSubNotes(noteId: Int, relationshipId: Int){

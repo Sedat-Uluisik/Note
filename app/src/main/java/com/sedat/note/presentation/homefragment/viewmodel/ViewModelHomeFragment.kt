@@ -25,32 +25,24 @@ class ViewModelHomeFragment @Inject constructor(
         _subNoteList.value = repository.getSubNotes(rootID)
     }
 
-    private fun getAllSubcategoriesRecursive(noteId: Int): List<Relationships>{
-        val subcategories = repository.getNotes(noteId)
-        val allSubcategories = arrayListOf<Relationships>()
+    fun deleteNoteAndSubNotes(noteIdToDelete: Int) = viewModelScope.launch{
+        val subNotes = mutableListOf<Note>()
+        val stack = mutableListOf(noteIdToDelete)
 
-        for (subcategory in subcategories.subNoteList) {
-            allSubcategories.add(subcategory)
-            allSubcategories.addAll(getAllSubcategoriesRecursive(subcategory.subID))
+        while(stack.isNotEmpty()){
+            val parentId = stack.removeAt(0)
+            val subNoteIds = repository.getSubNotesForDeleting(parentId)
+            subNotes.addAll(subNoteIds)
+            stack.addAll(subNoteIds.map { it.id })
         }
 
-        return allSubcategories
-    }
-
-    private suspend fun deleteSubcategoriesRecursive(categoryId: Int) {
-        val subcategories = getAllSubcategoriesRecursive(categoryId)
-
-        for (subcategory in subcategories) {
-            repository.deleteNoteORSubNotes(subcategory.subID, subcategory.id)
+        //delete all sub notes
+        subNotes.forEach {note ->
+            repository.deleteNote(note.id)
+            repository.deleteRelationship(note.id)
         }
+
+        //delete main note
+        repository.deleteNote(noteIdToDelete)
     }
-
-    fun deleteCategoryWithSubcategoriesRecursive(categoryId: Int) = viewModelScope.launch {
-        // Alt kategorileri sil
-        deleteSubcategoriesRecursive(categoryId)
-
-        // Ana kategoriyi sil
-        repository.deleteNoteORSubNotes(categoryId, categoryId)
-    }
-
 }

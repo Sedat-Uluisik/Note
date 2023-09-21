@@ -64,22 +64,22 @@ class HomeFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        adapter.moreBtnClick {notNoteWithSubNoteInfo ->
+        adapter.moreBtnClick {noteWithSubNoteInfo, position ->
             CustomAlert(requireContext()).show {
                 when(it){
                     CustomAlert.ButtonsClick.ADD_IMAGE ->{
 
                     }
                     CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
-                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = notNoteWithSubNoteInfo.note.id)
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = noteWithSubNoteInfo.note.id)
                         findNavController().navigate(action)
                     }
                     CustomAlert.ButtonsClick.UPDATE_NOTE ->{
-                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = notNoteWithSubNoteInfo.note.id)
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = noteWithSubNoteInfo.note.id)
                         findNavController().navigate(action)
                     }
                     CustomAlert.ButtonsClick.DELETE_NOTE ->{
-                        viewModel.deleteCategoryWithSubcategoriesRecursive(notNoteWithSubNoteInfo.note.id)
+                        viewModel.deleteNoteAndSubNotes(noteWithSubNoteInfo.note.id)
                     }
                 }
             }
@@ -102,6 +102,7 @@ class HomeFragment : Fragment() {
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
                 .collect{
+                    println("submit ---------------")
                     adapter.submitList(it)
                     binding.backBtnForSubNotes.hide()
             }
@@ -123,7 +124,6 @@ class HomeFragment : Fragment() {
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                     .distinctUntilChanged()
                     .collect{
-                        println("back btn submit")
                         adapter.submitList(it)
                     }
             }

@@ -59,7 +59,7 @@ class CreateNoteFragment : Fragment() {
         edtNote.afterTextChange {
             job?.cancel()
             job = lifecycleScope.launch {
-                delay(500)
+                delay(350)
                 if (it.isNotEmpty())
                     saveBtn.show()
                 else

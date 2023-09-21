@@ -47,6 +47,18 @@ class NoteRepositoryImpl @Inject constructor(
         return dao.getNotes(noteID)
     }
 
+    override suspend fun getSubNotesForDeleting(rootId: Int): List<Note> {
+        return dao.getSubNotesForDeleting(rootId)
+    }
+
+    override suspend fun deleteNote(id: Int) {
+        dao.deleteNote(id)
+    }
+
+    override suspend fun deleteRelationship(subId: Int) {
+        dao.deleteRelationship(subId)
+    }
+
     override suspend fun getNoteWithID(noteID: Int): Resource<Note> {
         return try {
             val result = dao.getNoteWithID(noteID)

@@ -27,13 +27,15 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
         holder.bind(getItem(position), _moreBtnClick, _itemClick)
 
         holder.itemView.setOnClickListener {
-            if(getItem(position).subNoteList.isNotEmpty())
-                _itemClick.invoke(getItem(position))
+            if(position >= 0 && position < currentList.size) {
+                if (getItem(position).subNoteList.isNotEmpty())
+                    _itemClick.invoke(getItem(position))
+            }
         }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit, itemClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
+        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo, position: Int) -> Unit, itemClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
             noteText.text = note.note.text
             noteTimeText.text = note.note.convertDate()
 
@@ -43,13 +45,13 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
                 hasSubNoteBtn.visibility = View.GONE
 
             moreBtn.setOnClickListener {
-                moreBtnClick.invoke(note)
+                moreBtnClick.invoke(note, adapterPosition)
             }
         }
     }
 
-    private var _moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit = {}
-    fun moreBtnClick(click: (note: NoteWithSubNoteInfo) -> Unit){
+    private var _moreBtnClick: (note: NoteWithSubNoteInfo, position: Int) -> Unit = {_,_ ->}
+    fun moreBtnClick(click: (note: NoteWithSubNoteInfo, position: Int) -> Unit){
         _moreBtnClick = click
     }
 
@@ -64,7 +66,7 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
         }
 
         override fun areContentsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
-            return oldItem == newItem
+            return oldItem.note == newItem.note
         }
 
     }

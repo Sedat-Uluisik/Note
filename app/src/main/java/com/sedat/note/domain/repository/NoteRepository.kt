@@ -14,6 +14,10 @@ interface NoteRepository {
 
     fun getNotes(noteID: Int): NoteWithSubNoteInfo
 
+    suspend fun getSubNotesForDeleting(rootId: Int): List<Note>
+    suspend fun deleteNote(id: Int)
+    suspend fun deleteRelationship(subId: Int)
+
     suspend fun getNoteWithID(noteID: Int): Resource<Note>
 
     suspend fun updateNote(id: Int, _text: String, _time: Long): Resource<Boolean>
