@@ -20,8 +20,8 @@ interface Dao {
     fun getMainNotes(): Flow<List<NoteWithSubNoteInfo>>
 
     @Transaction
-    @Query("SELECT * FROM T_Notes WHERE id = :noteID")
-    fun getNotes(noteID: Int): NoteWithSubNoteInfo
+    @Query("SELECT * FROM T_Notes WHERE rootID = -1")
+    suspend fun getMainNotesV2(): List<NoteWithSubNoteInfo>
 
     @Query("SELECT * FROM T_Notes WHERE id = :noteID")
     suspend fun getNoteWithID(noteID: Int): Note
@@ -44,11 +44,5 @@ interface Dao {
 
     @Query("DELETE FROM T_Relationships WHERE subID = :subId")
     suspend fun deleteRelationship(subId: Int)
-
-    @Transaction
-    suspend fun deleteNoteORSubNotes(noteId: Int, relationshipId: Int){
-        deleteNote(noteId)
-        deleteRelationship(relationshipId)
-    }
 
 }

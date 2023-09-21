@@ -12,7 +12,7 @@ interface NoteRepository {
 
     suspend fun getSubNotes(rootID: Int): List<NoteWithSubNoteInfo>
 
-    fun getNotes(noteID: Int): NoteWithSubNoteInfo
+    suspend fun getMainNotesV2(): Resource<List<NoteWithSubNoteInfo>>
 
     suspend fun getSubNotesForDeleting(rootId: Int): List<Note>
     suspend fun deleteNote(id: Int)
@@ -24,7 +24,5 @@ interface NoteRepository {
 
     suspend fun saveSubNote(note: Note): Resource<Long?>
     suspend fun saveRelationship(relationships: Relationships): Resource<Long?>
-
-    suspend fun deleteNoteORSubNotes(noteId: Int, relationshipId: Int)
 
 }

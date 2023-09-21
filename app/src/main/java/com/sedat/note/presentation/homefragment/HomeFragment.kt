@@ -21,6 +21,7 @@ import com.sedat.note.util.CustomAlert
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -101,8 +102,8 @@ class HomeFragment : Fragment() {
             viewModel.noteList()
                 .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
                 .distinctUntilChanged()
+                .debounce(500L)
                 .collect{
-                    println("submit ---------------")
                     adapter.submitList(it)
                     binding.backBtnForSubNotes.hide()
             }
@@ -119,14 +120,7 @@ class HomeFragment : Fragment() {
         if(rootIDList.size == 1){
             rootIDList.clear()
             binding.backBtnForSubNotes.hide()
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.noteList()
-                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                    .distinctUntilChanged()
-                    .collect{
-                        adapter.submitList(it)
-                    }
-            }
+            viewModel.getMainNotes()
         }
         else{
             viewModel.getSubNotes(rootIDList.last())

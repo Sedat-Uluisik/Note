@@ -8,6 +8,7 @@ import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
+import com.sedat.note.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,6 +24,17 @@ class ViewModelHomeFragment @Inject constructor(
     val subNoteList: LiveData<List<NoteWithSubNoteInfo>> get() = _subNoteList
     fun getSubNotes(rootID: Int) = viewModelScope.launch {
         _subNoteList.value = repository.getSubNotes(rootID)
+    }
+
+    fun getMainNotes() = viewModelScope.launch {
+        when(val result = repository.getMainNotesV2()){
+            is Resource.Success ->{
+                _subNoteList.value = result.data ?: listOf()
+            }
+            else ->{
+                _subNoteList.value = listOf()
+            }
+        }
     }
 
     fun deleteNoteAndSubNotes(noteIdToDelete: Int) = viewModelScope.launch{
