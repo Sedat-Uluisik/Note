@@ -1,17 +1,22 @@
 package com.sedat.note.presentation.homefragment
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentHomeBinding
 import com.sedat.note.domain.model.CustomType
@@ -26,7 +31,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -37,6 +41,30 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var adapter: AdapterHomeFragment
     private var rootIDList: ArrayList<Int> = arrayListOf()
+
+    private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissionss ->
+        val permissionCamera = permissionss.getValue(Manifest.permission.CAMERA)
+        val permissionStorage = permissionss.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if(permissionCamera && permissionStorage)
+            findNavController().navigate(R.id.action_homeFragment_to_selectImageFragment)
+        else{
+            if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) || !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.permission_required_from_app_settings),
+                    Snackbar.LENGTH_LONG
+                ).setAction("Retry") {
+                    val intent = Intent()
+                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    val uri = Uri.fromParts("package", requireActivity().packageName, null)
+                    intent.data = uri
+                    this.startActivity(intent)
+                }.show()
+            }else
+                displayErrorMessageForPermission()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +97,7 @@ class HomeFragment : Fragment() {
             CustomAlert(requireContext()).show {
                 when(it){
                     CustomAlert.ButtonsClick.ADD_IMAGE ->{
-
+                        permissionRequestLauncher.launch(permissionList)
                     }
                     CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
                         val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = noteWithSubNoteInfo.note.id)
@@ -137,6 +165,16 @@ class HomeFragment : Fragment() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressCallBack)
+    }
+
+    private fun displayErrorMessageForPermission() {
+        Snackbar.make(
+            binding.root,
+            getString(R.string.permission_required),
+            Snackbar.LENGTH_LONG
+        ).setAction("Retry") {
+            permissionRequestLauncher.launch(permissionList)
+        }.show()
     }
 
     override fun onDestroyView() {
