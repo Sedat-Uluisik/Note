@@ -18,4 +18,6 @@
     <string name="permission_required">Camera or storage permission required</string>
     <string name="permission_required_from_app_settings">You need to grant camera or storage permissions from the app settings</string>
     <string name="get_image">Get Image</string>
+    <string name="cancel_image">Cancel Image</string>
+    <string name="select_image">Select Image</string>
 </resources>

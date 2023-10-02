@@ -2,7 +2,6 @@ package com.sedat.note.presentation.selectimagefragment
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -14,30 +13,21 @@ import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.SeekBar
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.common.util.concurrent.ListenableFuture
-import com.sedat.note.R
 import com.sedat.note.databinding.FragmentSelectImageBinding
-import com.sedat.note.util.FileCreator
-import com.sedat.note.util.FileCreator.JPEG_FORMAT
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.concurrent.Executors
 
 
@@ -48,6 +38,8 @@ class SelectImageFragment : Fragment() {
 
     private lateinit var processCameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var processCameraProvider: ProcessCameraProvider
+
+    private var currentCamera = CameraSelector.DEFAULT_BACK_CAMERA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,17 +57,56 @@ class SelectImageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        listeners()
+    }
+
+    private fun listeners(){
         processCameraProviderFuture.addListener( {
             processCameraProvider = processCameraProviderFuture.get()
             binding.viewFinder.post { setupCamera() }
         }, ContextCompat.getMainExecutor(requireContext()))
+
+        binding.btnGetImage.setOnClickListener {
+            if (::processCameraProvider.isInitialized) {
+                processCameraProvider.unbindAll()
+            }
+
+            binding.btnDoneSelectImage.visibility = View.VISIBLE
+            binding.btnDontSelectImage.visibility = View.VISIBLE
+        }
+
+        binding.btnDoneSelectImage.setOnClickListener {
+            val bitmap = binding.viewFinder.bitmap
+            bitmap?.let {
+                saveImageToFile(it)
+            }
+
+            binding.btnDoneSelectImage.visibility = View.GONE
+            binding.btnDontSelectImage.visibility = View.GONE
+        }
+
+        binding.btnDontSelectImage.setOnClickListener {
+
+            setupCamera()
+            binding.btnDoneSelectImage.visibility = View.GONE
+            binding.btnDontSelectImage.visibility = View.GONE
+        }
+
+        binding.btnChangeCamera.setOnClickListener {
+            currentCamera = if(currentCamera == CameraSelector.DEFAULT_BACK_CAMERA)
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            else
+                CameraSelector.DEFAULT_BACK_CAMERA
+
+            setupCamera()
+        }
     }
 
     private fun setupCamera() {
         processCameraProvider.unbindAll()
         val camera = processCameraProvider.bindToLifecycle(
             this,
-            CameraSelector.DEFAULT_BACK_CAMERA,
+            currentCamera,
             buildPreviewUseCase(),
             buildImageCaptureUseCase(),
             buildImageAnalysisUseCase())
@@ -102,65 +133,25 @@ class SelectImageFragment : Fragment() {
     private fun buildImageCaptureUseCase(): ImageCapture {
         val display = binding.viewFinder.display
         val metrics = DisplayMetrics().also { display.getMetrics(it) }
-        val capture = ImageCapture.Builder()
+
+        return ImageCapture.Builder()
             .setTargetRotation(display.rotation)
             .setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
             .setFlashMode(ImageCapture.FLASH_MODE_OFF)
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
             .build()
-
-        val executor = Executors.newSingleThreadExecutor()
-        binding.btnGetImage.setOnClickListener {
-            capture.takePicture(
-                FileCreator.createTempFile(JPEG_FORMAT),
-                executor,
-                object : ImageCapture.OnImageSavedCallback {
-
-                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                        outputFileResults.savedUri?.let {
-
-                            val bitmap = BitmapFactory.decodeStream(
-                                requireActivity().contentResolver.openInputStream(it)
-                            )
-
-                            CoroutineScope(Dispatchers.Main).launch {
-                                //(view as ImageView).setImageBitmap(bitmap)
-                                /*Glide.with(requireContext())
-                                    .load(it)
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .skipMemoryCache(true)
-                                    .into(binding.btnGetImage)*/
-                            }
-
-                            saveImageToFile(bitmap, "159357")
-
-                            /*CoroutineScope(Dispatchers.Main).launch {
-                                val arguments = GalleryFragment.arguments(it.path.toString())
-                                Navigation.findNavController(requireActivity(), R.id.mainContent)
-                                    .navigate(R.id.imagePreviewFragment, arguments)
-                            }*/
-                        }
-                    }
-
-                    override fun onError(exception: ImageCaptureException) {
-
-                    }
-                })
-        }
-        return capture
     }
 
-    private fun saveImageToFile(bitmap: Bitmap, uid: String): Uri {
-        //val dir = File(requireContext().getExternalFilesDir("/"), "Pictures")
+    private fun saveImageToFile(bitmap: Bitmap): Uri {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val dir = File(requireContext().applicationContext.filesDir, "Pictures")
-        //val dir = File(Environment.getExternalStoragePublicDirectory("/"), "Pictures")
         if(!dir.exists())
             dir.mkdir()
 
         dir.setReadable(true)
         dir.setWritable(true)
 
-        val file = File(dir, "${uid}.jpg")
+        val file = File(dir, "${dateFormat.format(System.currentTimeMillis())}.jpg")
         file.setReadable(true)
         file.setWritable(true)
 
@@ -173,8 +164,7 @@ class SelectImageFragment : Fragment() {
             e.printStackTrace()
         }
 
-        //delete cached images
-        requireContext().cacheDir.deleteRecursively()
+        setupCamera()
 
         return Uri.parse(file.absolutePath)
     }
@@ -189,11 +179,10 @@ class SelectImageFragment : Fragment() {
             .setImageQueueDepth(10)
             .build()
         analysis.setAnalyzer(
-            Executors.newSingleThreadExecutor(),
-            ImageAnalysis.Analyzer { imageProxy ->
-                Log.d("CameraFragment", "Image analysis result $imageProxy")
-                imageProxy.close()
-            })
+            Executors.newSingleThreadExecutor()
+        ) { proxy ->
+            proxy.close()
+        }
         return analysis
     }
 
