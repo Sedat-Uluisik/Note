@@ -58,6 +58,7 @@
         android:src="@drawable/ic_change_camera_32"
         android:contentDescription="@string/get_image"
         android:layout_margin="14dp"
+        android:padding="4dp"
        app:layout_constraintEnd_toEndOf="@id/view_finder"
         app:layout_constraintBottom_toBottomOf="@id/view_finder"/>
 

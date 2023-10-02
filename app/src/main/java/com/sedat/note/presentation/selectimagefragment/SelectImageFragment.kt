@@ -1,18 +1,25 @@
 package com.sedat.note.presentation.selectimagefragment
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.Size
+import android.view.Display
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
+import android.view.WindowMetrics
+import android.view.animation.Animation
+import android.view.animation.RotateAnimation
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.FocusMeteringAction
@@ -93,6 +100,19 @@ class SelectImageFragment : Fragment() {
         }
 
         binding.btnChangeCamera.setOnClickListener {
+
+            val rotateAnimation = RotateAnimation(
+                180f,
+                0f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            ).apply {
+                duration = 400
+            }
+            it.startAnimation(rotateAnimation)
+
             currentCamera = if(currentCamera == CameraSelector.DEFAULT_BACK_CAMERA)
                 CameraSelector.DEFAULT_FRONT_CAMERA
             else
@@ -103,13 +123,16 @@ class SelectImageFragment : Fragment() {
     }
 
     private fun setupCamera() {
+        val display = binding.viewFinder.display
+        val metrics = getMetrics()
         processCameraProvider.unbindAll()
         val camera = processCameraProvider.bindToLifecycle(
             this,
             currentCamera,
-            buildPreviewUseCase(),
-            buildImageCaptureUseCase(),
-            buildImageAnalysisUseCase())
+            buildPreviewUseCase(display, metrics),
+            buildImageCaptureUseCase(display, metrics),
+            buildImageAnalysisUseCase(display, metrics)
+        )
 
         setupTapForFocus(camera)
 
@@ -118,25 +141,20 @@ class SelectImageFragment : Fragment() {
         }
     }
 
-    private fun buildPreviewUseCase(): Preview {
-        val display = binding.viewFinder.display
-        val metrics = DisplayMetrics().also { display.getMetrics(it) }
+    private fun buildPreviewUseCase(display: Display, metrics: Pair<Int, Int>): Preview {
         val preview = Preview.Builder()
             .setTargetRotation(display.rotation)
-            .setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
+            .setTargetResolution(Size(metrics.first, metrics.second))
             .build()
         preview.setSurfaceProvider(binding.viewFinder.surfaceProvider)
 
         return preview
     }
 
-    private fun buildImageCaptureUseCase(): ImageCapture {
-        val display = binding.viewFinder.display
-        val metrics = DisplayMetrics().also { display.getMetrics(it) }
-
+    private fun buildImageCaptureUseCase(display: Display, metrics: Pair<Int, Int>): ImageCapture {
         return ImageCapture.Builder()
             .setTargetRotation(display.rotation)
-            .setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
+            .setTargetResolution(Size(metrics.first, metrics.second))
             .setFlashMode(ImageCapture.FLASH_MODE_OFF)
             .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
             .build()
@@ -169,12 +187,10 @@ class SelectImageFragment : Fragment() {
         return Uri.parse(file.absolutePath)
     }
 
-    private fun buildImageAnalysisUseCase(): ImageAnalysis {
-        val display = binding.viewFinder.display
-        val metrics = DisplayMetrics().also { display.getMetrics(it) }
+    private fun buildImageAnalysisUseCase(display: Display, metrics: Pair<Int, Int>): ImageAnalysis {
         val analysis = ImageAnalysis.Builder()
             .setTargetRotation(display.rotation)
-            .setTargetResolution(Size(metrics.widthPixels, metrics.heightPixels))
+            .setTargetResolution(Size(metrics.first, metrics.second))
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
             .setImageQueueDepth(10)
             .build()
@@ -184,6 +200,20 @@ class SelectImageFragment : Fragment() {
             proxy.close()
         }
         return analysis
+    }
+
+    private fun getMetrics(): Pair<Int, Int>{
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            val windowMetrics = requireActivity().windowManager.currentWindowMetrics
+            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+            val width = windowMetrics.bounds.width() - insets.left - insets.right
+            val height = windowMetrics.bounds.height() - insets.top - insets.bottom
+            Pair(width, height)
+        }else{
+            val displayMetrics = DisplayMetrics()
+            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+            Pair(displayMetrics.widthPixels, displayMetrics.heightPixels)
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
