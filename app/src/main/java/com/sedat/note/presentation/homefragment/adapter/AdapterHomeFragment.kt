@@ -24,7 +24,7 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), _moreBtnClick, _itemClick)
+        holder.bind(getItem(position), _moreBtnClick)
 
         holder.itemView.setOnClickListener {
             if(position >= 0 && position < currentList.size) {
@@ -35,7 +35,7 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo, position: Int) -> Unit, itemClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
+        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
             noteText.text = note.note.text
             noteTimeText.text = note.note.convertDate()
 
@@ -45,13 +45,13 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
                 hasSubNoteBtn.visibility = View.GONE
 
             moreBtn.setOnClickListener {
-                moreBtnClick.invoke(note, adapterPosition)
+                moreBtnClick.invoke(note)
             }
         }
     }
 
-    private var _moreBtnClick: (note: NoteWithSubNoteInfo, position: Int) -> Unit = {_,_ ->}
-    fun moreBtnClick(click: (note: NoteWithSubNoteInfo, position: Int) -> Unit){
+    private var _moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit = {}
+    fun moreBtnClick(click: (note: NoteWithSubNoteInfo) -> Unit){
         _moreBtnClick = click
     }
 
@@ -62,7 +62,7 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
 
     private object DiffUtilHome: DiffUtil.ItemCallback<NoteWithSubNoteInfo>(){
         override fun areItemsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
-            return oldItem.note.id == newItem.note.id
+            return oldItem.note.id == newItem.note.id || oldItem.subNoteList.size == newItem.subNoteList.size
         }
 
         override fun areContentsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {

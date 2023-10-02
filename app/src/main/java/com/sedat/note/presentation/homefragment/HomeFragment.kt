@@ -10,11 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.sedat.note.R
@@ -46,8 +49,10 @@ class HomeFragment : Fragment() {
     private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissionss ->
         val permissionCamera = permissionss.getValue(Manifest.permission.CAMERA)
         val permissionStorage = permissionss.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        if(permissionCamera && permissionStorage)
-            findNavController().navigate(R.id.action_homeFragment_to_selectImageFragment)
+        if(permissionCamera && permissionStorage){
+            Navigation.findNavController(requireActivity(), R.id.nav_host)
+                .navigate(R.id.selectImageFragment, null, null)
+        }
         else{
             if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) || !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 Snackbar.make(
@@ -93,7 +98,7 @@ class HomeFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        adapter.moreBtnClick {noteWithSubNoteInfo, position ->
+        adapter.moreBtnClick {noteWithSubNoteInfo ->
             CustomAlert(requireContext()).show {
                 when(it){
                     CustomAlert.ButtonsClick.ADD_IMAGE ->{
@@ -151,10 +156,14 @@ class HomeFragment : Fragment() {
             viewModel.getMainNotes()
         }
         else{
-            viewModel.getSubNotes(rootIDList.last())
-            rootIDList.removeLast()
-            if(rootIDList.isEmpty())
+            if(rootIDList.isEmpty() && binding.backBtnForSubNotes.isVisible)
                 binding.backBtnForSubNotes.hide()
+            else if(rootIDList.isEmpty() && !binding.backBtnForSubNotes.isVisible)
+                requireActivity().finish()
+            else{
+                viewModel.getSubNotes(rootIDList.last())
+                rootIDList.removeLast()
+            }
         }
     }
 

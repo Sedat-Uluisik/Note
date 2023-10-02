@@ -69,6 +69,15 @@ dependencies {
     implementation("io.coil-kt:coil:2.4.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+
+    //camera
+    implementation ("androidx.camera:camera-core:1.2.2")
+    implementation ("androidx.camera:camera-camera2:1.2.2")
+    implementation ("androidx.camera:camera-lifecycle:1.2.2")
+    implementation ("androidx.camera:camera-view:1.2.3")
+
+    //glide
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 }
 
 kapt {
