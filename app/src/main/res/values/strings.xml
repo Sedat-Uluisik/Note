@@ -20,4 +20,14 @@
     <string name="get_image">Get Image</string>
     <string name="cancel_image">Cancel Image</string>
     <string name="select_image">Select Image</string>
+    <string name="note_is_not_selected">Note is not selected!</string>
+    <string name="image_path_not_save_to_room_db">Image Could Note Be Saved To Room DB</string>
+    <string name="error">Error</string>
+    <string name="try_again">Try Again</string>
+    <string name="selection_failed_please_try_again">Selection failed, please try again!</string>
+    <string name="image_could_not_be_saved_to_file">Image could not be saved to file!</string>
+    <string name="description">Description</string>
+    <string name="note_could_be_not_found">Note could be not found</string>
+    <string name="there_was_a_problem_retrieving_the_images">There was a problem retrieving the images</string>
+    <string name="image_zoom">Image Zoom</string>
 </resources>

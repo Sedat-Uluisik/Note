@@ -8,5 +8,6 @@ data class NoteImage(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
     var rootID: Int,
-    var imageFileUrl: String
+    var imageFileUrl: String,
+    var description: String
 )

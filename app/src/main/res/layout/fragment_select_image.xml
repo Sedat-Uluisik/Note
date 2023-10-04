@@ -12,9 +12,26 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:implementationMode="compatible"
+        android:layout_marginBottom="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/edt_image_note"/>
+
+    <EditText
+        android:id="@+id/edt_image_note"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:maxLines="1"
+        android:hint="@string/description"
+        android:background="@drawable/note_item_back"
+        android:padding="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_get_image"/>
 
     <ImageView

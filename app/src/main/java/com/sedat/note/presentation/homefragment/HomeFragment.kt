@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
@@ -33,6 +34,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -43,6 +45,7 @@ class HomeFragment : Fragment() {
     private val viewModel: ViewModelHomeFragment by viewModels()
     @Inject
     lateinit var adapter: AdapterHomeFragment
+    private var selectedNoteID: Int = -2
     private var rootIDList: ArrayList<Int> = arrayListOf()
 
     private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -50,8 +53,15 @@ class HomeFragment : Fragment() {
         val permissionCamera = permissionss.getValue(Manifest.permission.CAMERA)
         val permissionStorage = permissionss.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         if(permissionCamera && permissionStorage){
-            Navigation.findNavController(requireActivity(), R.id.nav_host)
-                .navigate(R.id.selectImageFragment, null, null)
+            /*Navigation.findNavController(requireActivity(), R.id.nav_host)
+                .navigate(R.id.selectImageFragment, null, null)*/
+
+           if(selectedNoteID != -2){
+               val action = HomeFragmentDirections.actionHomeFragmentToSelectImageFragment(noteId = selectedNoteID)
+               selectedNoteID = -2
+               findNavController().navigate(action)
+           }else
+               Toast.makeText(requireContext(), getString(R.string.note_is_not_selected), Toast.LENGTH_LONG).show()
         }
         else{
             if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) || !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
@@ -102,6 +112,7 @@ class HomeFragment : Fragment() {
             CustomAlert(requireContext()).show {
                 when(it){
                     CustomAlert.ButtonsClick.ADD_IMAGE ->{
+                        selectedNoteID = noteWithSubNoteInfo.note.id
                         permissionRequestLauncher.launch(permissionList)
                     }
                     CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
@@ -120,8 +131,11 @@ class HomeFragment : Fragment() {
         }
 
         adapter.itemClick {noteWithSubNoteInfo ->
-            rootIDList.add(noteWithSubNoteInfo.note.rootID)
-            viewModel.getSubNotes(noteWithSubNoteInfo.note.id)
+            /*rootIDList.add(noteWithSubNoteInfo.note.rootID)
+            viewModel.getSubNotes(noteWithSubNoteInfo.note.id)*/
+
+            val action = HomeFragmentDirections.actionHomeFragmentToNoteImagesFragment(noteID = noteWithSubNoteInfo.note.id)
+            findNavController().navigate(action)
         }
 
         binding.backBtnForSubNotes.setOnClickListener {

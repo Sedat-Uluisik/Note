@@ -10,7 +10,9 @@ import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
 import com.sedat.note.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,22 +24,28 @@ class ViewModelHomeFragment @Inject constructor(
 
     private var _subNoteList = MutableLiveData<List<NoteWithSubNoteInfo>>()
     val subNoteList: LiveData<List<NoteWithSubNoteInfo>> get() = _subNoteList
-    fun getSubNotes(rootID: Int) = viewModelScope.launch {
-        _subNoteList.value = repository.getSubNotes(rootID)
+    fun getSubNotes(rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
+        val data = repository.getSubNotes(rootID)
+        withContext(Dispatchers.Main){
+            _subNoteList.postValue(data)
+        }
     }
 
-    fun getMainNotes() = viewModelScope.launch {
-        when(val result = repository.getMainNotesV2()){
-            is Resource.Success ->{
-                _subNoteList.value = result.data ?: listOf()
-            }
-            else ->{
-                _subNoteList.value = listOf()
+    fun getMainNotes() = viewModelScope.launch(Dispatchers.IO) {
+        val result = repository.getMainNotesV2()
+        withContext(Dispatchers.Main){
+            when(result){
+                is Resource.Success ->{
+                    _subNoteList.postValue(result.data ?: listOf())
+                }
+                else ->{
+                    _subNoteList.postValue(listOf())
+                }
             }
         }
     }
 
-    fun deleteNoteAndSubNotes(noteIdToDelete: Int) = viewModelScope.launch{
+    fun deleteNoteAndSubNotes(noteIdToDelete: Int) = viewModelScope.launch(Dispatchers.IO){
         val subNotes = mutableListOf<Note>()
         val stack = mutableListOf(noteIdToDelete)
 

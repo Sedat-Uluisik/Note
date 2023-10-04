@@ -3,6 +3,7 @@ package com.sedat.note.presentation.selectimagefragment
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -28,8 +29,19 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.google.common.util.concurrent.ListenableFuture
+import com.sedat.note.R
 import com.sedat.note.databinding.FragmentSelectImageBinding
+import com.sedat.note.databinding.ItemLayoutErrorForSnackBarBinding
+import com.sedat.note.presentation.selectimagefragment.viewmodel.ViewModelSelectImage
+import com.sedat.note.util.Resource
+import com.sedat.note.util.hide
+import com.sedat.note.util.show
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -37,15 +49,17 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.Executors
 
-
+@AndroidEntryPoint
 class SelectImageFragment : Fragment() {
 
     private var _binding: FragmentSelectImageBinding ?= null
     private val binding get() = _binding!!
+    private val viewModel: ViewModelSelectImage by viewModels()
 
     private lateinit var processCameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var processCameraProvider: ProcessCameraProvider
 
+    private val args: SelectImageFragmentArgs by navArgs()
     private var currentCamera = CameraSelector.DEFAULT_BACK_CAMERA
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +79,7 @@ class SelectImageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         listeners()
+        observe()
     }
 
     private fun listeners(){
@@ -78,25 +93,34 @@ class SelectImageFragment : Fragment() {
                 processCameraProvider.unbindAll()
             }
 
-            binding.btnDoneSelectImage.visibility = View.VISIBLE
-            binding.btnDontSelectImage.visibility = View.VISIBLE
+            binding.btnChangeCamera.hide()
+            binding.btnDoneSelectImage.show()
+            binding.btnDontSelectImage.show()
         }
 
         binding.btnDoneSelectImage.setOnClickListener {
-            val bitmap = binding.viewFinder.bitmap
-            bitmap?.let {
-                saveImageToFile(it)
-            }
-
-            binding.btnDoneSelectImage.visibility = View.GONE
-            binding.btnDontSelectImage.visibility = View.GONE
+           if(args.noteId != -2){
+               val bitmap = binding.viewFinder.bitmap
+               bitmap?.let {
+                   val imagePath = saveImageToFile(it)
+                   if(imagePath.isNotEmpty()) {
+                       val description = binding.edtImageNote.text.toString().ifEmpty { "" }
+                       viewModel.saveImagePathToRoomDB(args.noteId, imagePath, description)
+                   }
+                   else
+                       showErrorSnackBar(getString(R.string.image_could_not_be_saved_to_file))
+               }
+           }else{
+               showErrorSnackBar(getString(R.string.selection_failed_please_try_again))
+           }
         }
 
         binding.btnDontSelectImage.setOnClickListener {
 
             setupCamera()
-            binding.btnDoneSelectImage.visibility = View.GONE
-            binding.btnDontSelectImage.visibility = View.GONE
+            binding.btnDoneSelectImage.hide()
+            binding.btnDontSelectImage.hide()
+            binding.btnChangeCamera.show()
         }
 
         binding.btnChangeCamera.setOnClickListener {
@@ -122,6 +146,35 @@ class SelectImageFragment : Fragment() {
         }
     }
 
+    private fun observe(){
+        viewModel.isImageSaveToRoomDBSuccessful.observe(viewLifecycleOwner){
+            when(it){
+                is Resource.Loading ->{}
+                is Resource.Success ->{
+                    binding.btnDoneSelectImage.hide()
+                    binding.btnDontSelectImage.hide()
+                    setupCamera()
+                    binding.btnChangeCamera.show()
+                    binding.edtImageNote.setText("")
+                }
+                is Resource.Error -> showErrorSnackBar(it.message ?: getString(R.string.image_path_not_save_to_room_db))
+            }
+        }
+    }
+
+    private fun showErrorSnackBar(message: String){
+        val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_LONG)
+        val customView = ItemLayoutErrorForSnackBarBinding.inflate(
+            LayoutInflater.from(requireContext())
+        )
+        snackbar.view.setBackgroundColor(Color.TRANSPARENT)
+       snackbar.apply {
+           (view as ViewGroup).addView(customView.root)
+           customView.txtErrorMessage.text = message
+           show()
+       }
+    }
+
     private fun setupCamera() {
         val display = binding.viewFinder.display
         val metrics = getMetrics()
@@ -136,9 +189,9 @@ class SelectImageFragment : Fragment() {
 
         setupTapForFocus(camera)
 
-        camera.cameraInfo.zoomState.observe(viewLifecycleOwner){
+        /*camera.cameraInfo.zoomState.observe(viewLifecycleOwner){
             println(it.zoomRatio)
-        }
+        }*/
     }
 
     private fun buildPreviewUseCase(display: Display, metrics: Pair<Int, Int>): Preview {
@@ -160,7 +213,7 @@ class SelectImageFragment : Fragment() {
             .build()
     }
 
-    private fun saveImageToFile(bitmap: Bitmap): Uri {
+    private fun saveImageToFile(bitmap: Bitmap): String{
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val dir = File(requireContext().applicationContext.filesDir, "Pictures")
         if(!dir.exists())
@@ -182,9 +235,7 @@ class SelectImageFragment : Fragment() {
             e.printStackTrace()
         }
 
-        setupCamera()
-
-        return Uri.parse(file.absolutePath)
+        return if(file.exists()) file.absolutePath else ""
     }
 
     private fun buildImageAnalysisUseCase(display: Display, metrics: Pair<Int, Int>): ImageAnalysis {

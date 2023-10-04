@@ -1,6 +1,7 @@
 package com.sedat.note.domain.repository
 
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteImage
 import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.util.Resource
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
     suspend fun saveNote(note: Note): Flow<Resource<Boolean>>
+    suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Resource<Boolean>
     fun getMainNotes(): Flow<List<NoteWithSubNoteInfo>>
 
     suspend fun getSubNotes(rootID: Int): List<NoteWithSubNoteInfo>
@@ -15,6 +17,7 @@ interface NoteRepository {
     suspend fun getMainNotesV2(): Resource<List<NoteWithSubNoteInfo>>
 
     suspend fun getSubNotesForDeleting(rootId: Int): List<Note>
+    suspend fun getNoteImages(rootId: Int): Resource<List<NoteImage>>
     suspend fun deleteNote(id: Int)
     suspend fun deleteRelationship(subId: Int)
 

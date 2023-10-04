@@ -39,10 +39,12 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
             noteText.text = note.note.text
             noteTimeText.text = note.note.convertDate()
 
-            if(note.subNoteList.isNotEmpty())
+            if(note.subNoteList.isNotEmpty()) {
                 hasSubNoteBtn.visibility = View.VISIBLE
-            else
+            }
+            else {
                 hasSubNoteBtn.visibility = View.GONE
+            }
 
             moreBtn.setOnClickListener {
                 moreBtnClick.invoke(note)
@@ -62,7 +64,9 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
 
     private object DiffUtilHome: DiffUtil.ItemCallback<NoteWithSubNoteInfo>(){
         override fun areItemsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
-            return oldItem.note.id == newItem.note.id || oldItem.subNoteList.size == newItem.subNoteList.size
+            return oldItem.note.id == newItem.note.id &&
+                    oldItem.subNoteList.size == newItem.subNoteList.size &&
+                    oldItem.subNoteList.map { it.id } == newItem.subNoteList.map { it.id }
         }
 
         override fun areContentsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {

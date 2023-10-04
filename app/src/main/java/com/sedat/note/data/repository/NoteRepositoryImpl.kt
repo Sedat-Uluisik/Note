@@ -4,6 +4,7 @@ import android.content.Context
 import com.sedat.note.R
 import com.sedat.note.domain.database.Dao
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteImage
 import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
@@ -34,6 +35,18 @@ class NoteRepositoryImpl @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
+    override suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Resource<Boolean> {
+        return try {
+            val result = dao.saveImageFilePathToRoomDB(noteImage)
+            if(result != null)
+                Resource.Success(true)
+            else
+                Resource.Error(context.getString(R.string.image_path_not_save_to_room_db))
+        }catch (ex: Exception){
+            Resource.Error(context.getString(R.string.image_path_not_save_to_room_db))
+        }
+    }
+
     override fun getMainNotes() = dao.getMainNotes()
     override suspend fun getSubNotes(rootID: Int): List<NoteWithSubNoteInfo>{
         return try {
@@ -56,6 +69,15 @@ class NoteRepositoryImpl @Inject constructor(
         return dao.getSubNotesForDeleting(rootId)
     }
 
+    override suspend fun getNoteImages(rootId: Int): Resource<List<NoteImage>> {
+        return try {
+            val imageList = dao.getNoteImages(rootId)
+            Resource.Success(imageList)
+        }catch (ex: Exception){
+            Resource.Error(context.getString(R.string.there_was_a_problem_retrieving_the_images))
+        }
+    }
+
     override suspend fun deleteNote(id: Int) {
         dao.deleteNote(id)
     }
@@ -69,7 +91,7 @@ class NoteRepositoryImpl @Inject constructor(
             val result = dao.getNoteWithID(noteID)
             Resource.Success(result)
         }catch (e: Exception){
-            Resource.Error(e.message.toString())
+            Resource.Error(context.getString(R.string.note_could_be_not_found))
         }
     }
 
@@ -82,7 +104,7 @@ class NoteRepositoryImpl @Inject constructor(
             else
                 Resource.Error(context.getString(R.string.note_update_is_not_successful))
         }catch (e: Exception){
-            Resource.Error(e.message.toString())
+            Resource.Error(context.getString(R.string.note_update_is_not_successful))
         }
     }
 
