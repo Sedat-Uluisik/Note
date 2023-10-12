@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sedat.note.domain.model.Note
-import com.sedat.note.domain.model.NoteWithSubNoteInfo
-import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
 import com.sedat.note.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +20,8 @@ class ViewModelHomeFragment @Inject constructor(
 
     fun noteList() = repository.getMainNotes()
 
-    private var _subNoteList = MutableLiveData<List<NoteWithSubNoteInfo>>()
-    val subNoteList: LiveData<List<NoteWithSubNoteInfo>> get() = _subNoteList
+    private var _subNoteList = MutableLiveData<List<Note>>()
+    val subNoteList: LiveData<List<Note>> get() = _subNoteList
     fun getSubNotes(rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
         val data = repository.getSubNotes(rootID)
         withContext(Dispatchers.Main){

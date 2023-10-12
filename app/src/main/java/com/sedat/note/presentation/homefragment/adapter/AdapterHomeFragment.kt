@@ -1,18 +1,17 @@
 package com.sedat.note.presentation.homefragment.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sedat.note.databinding.LayoutNoteItemBinding
 import com.sedat.note.domain.model.Note
-import com.sedat.note.domain.model.NoteWithSubNoteInfo
-import java.util.Date
+import com.sedat.note.util.hide
+import com.sedat.note.util.show
 import javax.inject.Inject
 
-class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo, AdapterHomeFragment.ViewHolder>(DiffUtilHome) {
+class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFragment.ViewHolder>(DiffUtilHome) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutNoteItemBinding.inflate(
@@ -28,23 +27,29 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
 
         holder.itemView.setOnClickListener {
             if(position >= 0 && position < currentList.size) {
-                if (getItem(position).subNoteList.isNotEmpty())
+                if (getItem(position).subNoteCount > 0)
                     _itemClick.invoke(getItem(position))
             }
         }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: NoteWithSubNoteInfo, moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit) = with(binding){
-            noteText.text = note.note.text
-            noteTimeText.text = note.note.convertDate()
+        fun bind(note: Note, moreBtnClick: (note: Note) -> Unit) = with(binding){
+            noteText.text = note.text
+            noteTimeText.text = note.convertDate()
 
-            if(note.subNoteList.isNotEmpty()) {
-                hasSubNoteBtn.visibility = View.VISIBLE
+            println(note.subNoteCount)
+
+            if(note.subNoteCount > 0) {
+                hasSubNoteBtn.show()
             }
             else {
-                hasSubNoteBtn.visibility = View.GONE
+                hasSubNoteBtn.hide()
             }
+            if(note.imageCount > 0)
+                hasImageFromNote.show()
+            else
+                hasImageFromNote.hide()
 
             moreBtn.setOnClickListener {
                 moreBtnClick.invoke(note)
@@ -52,27 +57,24 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<NoteWithSubNoteInfo
         }
     }
 
-    private var _moreBtnClick: (note: NoteWithSubNoteInfo) -> Unit = {}
-    fun moreBtnClick(click: (note: NoteWithSubNoteInfo) -> Unit){
+    private var _moreBtnClick: (note: Note) -> Unit = {}
+    fun moreBtnClick(click: (note: Note) -> Unit){
         _moreBtnClick = click
     }
 
-    private var _itemClick: (note: NoteWithSubNoteInfo) -> Unit = {}
-    fun itemClick(click: (note: NoteWithSubNoteInfo) -> Unit){
+    private var _itemClick: (note: Note) -> Unit = {}
+    fun itemClick(click: (note: Note) -> Unit){
         _itemClick = click
     }
 
-    private object DiffUtilHome: DiffUtil.ItemCallback<NoteWithSubNoteInfo>(){
-        override fun areItemsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
-            return oldItem.note.id == newItem.note.id &&
-                    oldItem.subNoteList.size == newItem.subNoteList.size &&
-                    oldItem.subNoteList.map { it.id } == newItem.subNoteList.map { it.id }
+    private object DiffUtilHome: DiffUtil.ItemCallback<Note>(){
+        override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
+            return oldItem.id == newItem.id &&
+                    oldItem.subNoteCount == newItem.subNoteCount
         }
-
-        override fun areContentsTheSame(oldItem: NoteWithSubNoteInfo, newItem: NoteWithSubNoteInfo): Boolean {
-            return oldItem.note == newItem.note
+        override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
+            return  oldItem == newItem
         }
-
     }
 
 }

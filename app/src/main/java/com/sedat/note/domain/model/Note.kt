@@ -1,23 +1,23 @@
 package com.sedat.note.domain.model
 
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Entity(tableName = "T_Notes")
-data class Note(
-    @PrimaryKey(autoGenerate = true)
-    var id: Int,
-    var rootID: Int,
-    var text: String,
-    var time: Long,
+data class Note(var id: Int = 0,
+                 var rootID: Int = 0,
+                 var text: String = "",
+                 var time: Long = 0L,
+                 val subNoteCount: Int = 0,
+                 val imageCount: Int = 0
 ){
     fun convertDate(): String {
-        val date = Date(time)
-        val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        return format.format(date).toString()
+        return try {
+            val date = Date(time)
+            val format = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+            return format.format(date).toString()
+        }catch (e: Exception){
+            "--:--"
+        }
     }
 }

@@ -1,20 +1,20 @@
 package com.sedat.note.domain.repository
 
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.domain.model.NoteImage
-import com.sedat.note.domain.model.NoteWithSubNoteInfo
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
-    suspend fun saveNote(note: Note): Flow<Resource<Boolean>>
+    suspend fun saveNote(note: NoteDto): Flow<Resource<Boolean>>
     suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Resource<Boolean>
-    fun getMainNotes(): Flow<List<NoteWithSubNoteInfo>>
+    fun getMainNotes(): Flow<List<Note>>
 
-    suspend fun getSubNotes(rootID: Int): List<NoteWithSubNoteInfo>
+    suspend fun getSubNotes(rootID: Int): List<Note>
 
-    suspend fun getMainNotesV2(): Resource<List<NoteWithSubNoteInfo>>
+    suspend fun getMainNotesV2(): Resource<List<Note>>
 
     suspend fun getSubNotesForDeleting(rootId: Int): List<Note>
     suspend fun getNoteImages(rootId: Int): Resource<List<NoteImage>>
@@ -25,7 +25,7 @@ interface NoteRepository {
 
     suspend fun updateNote(id: Int, _text: String, _time: Long): Resource<Boolean>
 
-    suspend fun saveSubNote(note: Note): Resource<Long?>
+    suspend fun saveSubNote(note: NoteDto): Resource<Long?>
     suspend fun saveRelationship(relationships: Relationships): Resource<Long?>
 
 }

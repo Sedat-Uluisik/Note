@@ -1,21 +1,15 @@
 package com.sedat.note.presentation.noteimagesfragment.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.sedat.note.databinding.ItemLayoutImagesBinding
-import com.sedat.note.databinding.LayoutNoteItemBinding
-import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteImage
-import com.sedat.note.domain.model.NoteWithSubNoteInfo
-import java.util.Date
 import javax.inject.Inject
 
 class AdapterNoteImagesFragment @Inject constructor(

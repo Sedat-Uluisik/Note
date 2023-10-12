@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sedat.note.R
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
 import com.sedat.note.util.Resource
@@ -25,7 +26,7 @@ class ViewModelCreateNoteFragment @Inject constructor(
     private val _isSaveSuccessful = MutableLiveData<Resource<Boolean>>()
     val isSaveSuccessful: LiveData<Resource<Boolean>> get() = _isSaveSuccessful
 
-    fun saveNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
+    fun saveNote(note: NoteDto) = viewModelScope.launch(Dispatchers.IO) {
         repository.saveNote(note).collect {
             withContext(Dispatchers.Main){
                 _isSaveSuccessful.postValue(it)
@@ -58,7 +59,7 @@ class ViewModelCreateNoteFragment @Inject constructor(
         }
     }
 
-    fun saveSubNote(note: Note, rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
+    fun saveSubNote(note: NoteDto, rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
         val saveNote: Resource<Long?>
         val createRelationship: Resource<Long?>
 

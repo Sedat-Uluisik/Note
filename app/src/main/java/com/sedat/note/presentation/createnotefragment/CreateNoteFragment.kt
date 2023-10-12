@@ -14,6 +14,7 @@ import com.sedat.note.R
 import com.sedat.note.databinding.FragmentCreateNoteBinding
 import com.sedat.note.domain.model.CustomType
 import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.presentation.createnotefragment.viewmodel.ViewModelCreateNoteFragment
 import com.sedat.note.util.Resource
 import com.sedat.note.util.afterTextChange
@@ -81,7 +82,7 @@ class CreateNoteFragment : Fragment() {
 
     private fun createNewNote(_text: String){
         if(_text.isNotEmpty()){
-            val note = Note(id = 0, rootID = -1, text = _text, time = System.currentTimeMillis())
+            val note = NoteDto(id = 0, rootID = -1, text = _text, time = System.currentTimeMillis())
             viewModel.saveNote(note)
         }
     }
@@ -93,7 +94,7 @@ class CreateNoteFragment : Fragment() {
 
     private fun addSubNote(_text: String, _rootID: Int){
         if(_text.isNotEmpty() && _rootID != -1){
-            val note = Note(id = 0, rootID = _rootID, text = _text, time = System.currentTimeMillis())
+            val note = NoteDto(id = 0, rootID = _rootID, text = _text, time = System.currentTimeMillis())
             viewModel.saveSubNote(note, _rootID)
         }
     }

@@ -30,4 +30,7 @@
     <string name="note_could_be_not_found">Note could be not found</string>
     <string name="there_was_a_problem_retrieving_the_images">There was a problem retrieving the images</string>
     <string name="image_zoom">Image Zoom</string>
+    <string name="this_note_is_has_image">This note is has image</string>
+    <string name="this_note_is_has_sub_note">This note is has sub note</string>
+    <string name="more_button">More button</string>
 </resources>

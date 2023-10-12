@@ -17,8 +17,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.sedat.note.R
@@ -34,7 +32,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -112,30 +109,30 @@ class HomeFragment : Fragment() {
             CustomAlert(requireContext()).show {
                 when(it){
                     CustomAlert.ButtonsClick.ADD_IMAGE ->{
-                        selectedNoteID = noteWithSubNoteInfo.note.id
+                        selectedNoteID = noteWithSubNoteInfo.id
                         permissionRequestLauncher.launch(permissionList)
                     }
                     CustomAlert.ButtonsClick.ADD_SUB_NOTE ->{
-                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = noteWithSubNoteInfo.note.id)
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(CustomType.ADD_SUB_NOTE, selectedNoteId = noteWithSubNoteInfo.id)
                         findNavController().navigate(action)
                     }
                     CustomAlert.ButtonsClick.UPDATE_NOTE ->{
-                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = noteWithSubNoteInfo.note.id)
+                        val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(type = CustomType.UPDATE_NOTE, selectedNoteId = noteWithSubNoteInfo.id)
                         findNavController().navigate(action)
                     }
                     CustomAlert.ButtonsClick.DELETE_NOTE ->{
-                        viewModel.deleteNoteAndSubNotes(noteWithSubNoteInfo.note.id)
+                        viewModel.deleteNoteAndSubNotes(noteWithSubNoteInfo.id)
                     }
                 }
             }
         }
 
         adapter.itemClick {noteWithSubNoteInfo ->
-            /*rootIDList.add(noteWithSubNoteInfo.note.rootID)
-            viewModel.getSubNotes(noteWithSubNoteInfo.note.id)*/
+            rootIDList.add(noteWithSubNoteInfo.rootID)
+            viewModel.getSubNotes(noteWithSubNoteInfo.id)
 
-            val action = HomeFragmentDirections.actionHomeFragmentToNoteImagesFragment(noteID = noteWithSubNoteInfo.note.id)
-            findNavController().navigate(action)
+            /*val action = HomeFragmentDirections.actionHomeFragmentToNoteImagesFragment(noteID = noteWithSubNoteInfo.note.id)
+            findNavController().navigate(action)*/
         }
 
         binding.backBtnForSubNotes.setOnClickListener {
