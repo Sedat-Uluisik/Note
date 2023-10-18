@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sedat.note.databinding.LayoutNoteItemBinding
 import com.sedat.note.domain.model.Note
+import com.sedat.note.util.ButtonsClick
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import javax.inject.Inject
@@ -23,48 +24,48 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position), _moreBtnClick)
+        holder.bind(getItem(position), _btnClick)
 
         holder.itemView.setOnClickListener {
             if(position >= 0 && position < currentList.size) {
                 if (getItem(position).subNoteCount > 0)
-                    _itemClick.invoke(getItem(position))
+                    _btnClick.invoke(getItem(position), ButtonsClick.RECYCLERVIEW_ITEM_CLICK)
             }
         }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(note: Note, moreBtnClick: (note: Note) -> Unit) = with(binding){
+        fun bind(note: Note, btnClick: (note: Note, type: ButtonsClick) -> Unit) = with(binding){
             noteText.text = note.text
             noteTimeText.text = note.convertDate()
 
-            println(note.subNoteCount)
-
             if(note.subNoteCount > 0) {
-                hasSubNoteBtn.show()
+                btnSubNote.show()
             }
             else {
-                hasSubNoteBtn.hide()
+                btnSubNote.hide()
             }
             if(note.imageCount > 0)
-                hasImageFromNote.show()
+                btnImage.show()
             else
-                hasImageFromNote.hide()
+                btnImage.hide()
 
             moreBtn.setOnClickListener {
-                moreBtnClick.invoke(note)
+                btnClick.invoke(note, ButtonsClick.MORE)
             }
+            btnSubNote.setOnClickListener {
+                btnClick.invoke(note, ButtonsClick.SHOW_SUB_NOTES)
+            }
+            btnImage.setOnClickListener {
+                btnClick.invoke(note, ButtonsClick.SHOW_IMAGE)
+            }
+
         }
     }
 
-    private var _moreBtnClick: (note: Note) -> Unit = {}
-    fun moreBtnClick(click: (note: Note) -> Unit){
-        _moreBtnClick = click
-    }
-
-    private var _itemClick: (note: Note) -> Unit = {}
-    fun itemClick(click: (note: Note) -> Unit){
-        _itemClick = click
+    private var _btnClick: (note: Note, type: ButtonsClick) -> Unit = {_,_ ->}
+    fun moreBtnClick(click: (note: Note, type: ButtonsClick) -> Unit){
+        _btnClick = click
     }
 
     private object DiffUtilHome: DiffUtil.ItemCallback<Note>(){

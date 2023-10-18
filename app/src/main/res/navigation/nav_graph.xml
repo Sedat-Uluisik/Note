@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_create_note" >
         <argument
             android:name="type"
-            app:argType="com.sedat.note.domain.model.CustomType"
+            app:argType="com.sedat.note.domain.model.ActionType"
             android:defaultValue="CREATE_NEW_NOTE" />
         <argument
             android:name="selected_note_id"

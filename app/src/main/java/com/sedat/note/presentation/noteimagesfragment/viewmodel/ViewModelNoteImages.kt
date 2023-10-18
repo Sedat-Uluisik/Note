@@ -28,4 +28,21 @@ class ViewModelNoteImages @Inject constructor(
         }
     }
 
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String> get() = _message
+    fun deleteNoteImagePathFromRoom(noteId: Int, imageId: Int) = viewModelScope.launch(Dispatchers.IO) {
+        when(val result = repository.deleteNoteImagePathFromRoom(imageId)){
+            is Resource.Success ->{
+                getNoteImages(noteId)
+            }
+            is Resource.Loading ->{}
+            is Resource.Error ->{
+                withContext(Dispatchers.Main){
+                    _message.postValue(result.message ?: "error")
+                }
+            }
+        }
+
+    }
+
 }

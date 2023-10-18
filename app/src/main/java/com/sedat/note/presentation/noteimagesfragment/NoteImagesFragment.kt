@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
@@ -13,10 +14,12 @@ import com.sedat.note.R
 import com.sedat.note.databinding.FragmentNoteImagesBinding
 import com.sedat.note.presentation.noteimagesfragment.adapter.AdapterNoteImagesFragment
 import com.sedat.note.presentation.noteimagesfragment.viewmodel.ViewModelNoteImages
+import com.sedat.note.util.CustomAlert
 import com.sedat.note.util.Resource
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +57,7 @@ class NoteImagesFragment : Fragment() {
     private fun listeners() {
         adapter.itemClick {imagePath ->
             binding.recyclerImages.hide()
-            binding.imgZoom.show()
+            binding.layoutZoomable.show()
             glide
                 .load(imagePath)
                 .skipMemoryCache(true)
@@ -62,9 +65,19 @@ class NoteImagesFragment : Fragment() {
                 .into(binding.imgZoom)
         }
 
-        binding.imgZoom.setOnClickListener {
+        adapter.deleteBtnClick {noteId, imageId, imagePath ->
+            CustomAlert(requireContext()).showDefaultAlert(getString(R.string.delete), getString(R.string.is_delete_image)) {
+                if(it){
+                    viewModel.deleteNoteImagePathFromRoom(noteId = noteId, imageId = imageId)
+                    deleteImageFile(imagePath)
+                }
+            }
+        }
+
+        binding.btnCloseImage.setOnClickListener{
             binding.imgZoom.setImageDrawable(null)
-            binding.imgZoom.hide()
+            binding.imgZoom.resetZoom()
+            binding.layoutZoomable.hide()
             binding.recyclerImages.show()
         }
     }
@@ -80,6 +93,21 @@ class NoteImagesFragment : Fragment() {
                 }
                 is Resource.Loading ->{}
             }
+        }
+        viewModel.message.observe(viewLifecycleOwner){
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun deleteImageFile(imagePath: String){
+        try {
+            val file = File(imagePath)
+            if(file.exists())
+                file.delete()
+        }catch (e: Exception){
+            val file = File(imagePath)
+            if(file.exists())
+                file.delete()
         }
     }
 

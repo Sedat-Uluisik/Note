@@ -12,8 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentCreateNoteBinding
-import com.sedat.note.domain.model.CustomType
-import com.sedat.note.domain.model.Note
+import com.sedat.note.domain.model.ActionType
 import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.presentation.createnotefragment.viewmodel.ViewModelCreateNoteFragment
 import com.sedat.note.util.Resource
@@ -46,7 +45,7 @@ class CreateNoteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(args.selectedNoteId != -1 && args.type == CustomType.UPDATE_NOTE)
+        if(args.selectedNoteId != -1 && args.type == ActionType.UPDATE_NOTE)
             viewModel.getNoteWithID(args.selectedNoteId)
 
         listeners()
@@ -71,11 +70,11 @@ class CreateNoteFragment : Fragment() {
 
 
         saveBtn.setOnClickListener {
-            if(args.type == CustomType.UPDATE_NOTE && args.selectedNoteId != -1)
+            if(args.type == ActionType.UPDATE_NOTE && args.selectedNoteId != -1)
                 updateCurrentNote(binding.edtNote.text.toString())
-            else if(args.type == CustomType.CREATE_NEW_NOTE)
+            else if(args.type == ActionType.CREATE_NEW_NOTE)
                 createNewNote(binding.edtNote.text.toString())
-            else if(args.type == CustomType.ADD_SUB_NOTE && args.selectedNoteId != -1)
+            else if(args.type == ActionType.ADD_SUB_NOTE && args.selectedNoteId != -1)
                 addSubNote(binding.edtNote.text.toString(), args.selectedNoteId)
         }
     }
@@ -122,7 +121,6 @@ class CreateNoteFragment : Fragment() {
                 is Resource.Success ->{
                     resource.data?.let {
                         binding.edtNote.setText(it.text)
-                        saveBtn.show()
                     } ?: Toast.makeText(requireContext(), getString(R.string.selected_note_not_found), Toast.LENGTH_LONG).show()
 
                 }

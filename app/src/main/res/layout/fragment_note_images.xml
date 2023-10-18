@@ -22,15 +22,33 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <com.sedat.note.util.ZoomableImageView
-        android:id="@+id/img_zoom"
+    <RelativeLayout
+        android:id="@+id/layout_zoomable"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/image_zoom" />
+        android:visibility="gone">
+
+        <com.sedat.note.util.ZoomableImageView
+            android:id="@+id/img_zoom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/image_zoom"
+            android:scaleType="centerCrop"/>
+
+        <ImageView
+            android:id="@+id/btn_close_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close_48"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:padding="4dp"
+            android:contentDescription="@string/close_image" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

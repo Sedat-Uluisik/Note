@@ -55,6 +55,9 @@ interface Dao {
     @Query("DELETE FROM T_Relationships WHERE subID = :subId")
     suspend fun deleteRelationship(subId: Int)
 
+    @Query("DELETE FROM T_NoteImage WHERE id = :imageId")
+    suspend fun deleteNoteImagePathFromRoom(imageId: Int): Int
+
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Long?
 

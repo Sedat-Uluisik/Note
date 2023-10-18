@@ -21,19 +21,6 @@
         android:drawableStart="@drawable/ic_add_subcaregory_24"/>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_update_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/update_note"
-        android:textSize="15sp"
-        android:textAllCaps="false"
-        android:padding="4dp"
-        android:layout_margin="4dp"
-        android:textColor="@color/blue_light"
-        android:drawableStart="@drawable/ic_update_24"
-        android:background="@drawable/btn_green_background"/>
-
-    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_delete_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -33,4 +33,8 @@
     <string name="this_note_is_has_image">This note is has image</string>
     <string name="this_note_is_has_sub_note">This note is has sub note</string>
     <string name="more_button">More button</string>
+    <string name="close_image">Close Image</string>
+    <string name="delete">Sil</string>
+    <string name="is_delete_image">Resim silinsin mi?</string>
+    <string name="image_is_not_delete">Image is not delete</string>
 </resources>

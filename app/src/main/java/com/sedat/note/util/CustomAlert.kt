@@ -7,13 +7,10 @@ import androidx.appcompat.app.AlertDialog
 import com.sedat.note.databinding.ItemLayoutCustomAlertBinding
 
 class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) {
-    enum class ButtonsClick{
-        ADD_SUB_NOTE, ADD_IMAGE, UPDATE_NOTE, DELETE_NOTE
-    }
 
     private lateinit var onButtonClick: (click: ButtonsClick) -> Unit
 
-    fun show(click: (click: ButtonsClick) -> Unit){
+    fun showCustomAlert(click: (click: ButtonsClick) -> Unit){
         val view = ItemLayoutCustomAlertBinding.inflate(LayoutInflater.from(_context))
         val builder = AlertDialog.Builder(_context)
         builder.setView(view.root)
@@ -36,15 +33,27 @@ class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) 
                 alertDialog.dismiss()
             }
 
-            btnUpdateNote.setOnClickListener {
-                onButtonClick(ButtonsClick.UPDATE_NOTE)
-                alertDialog.dismiss()
-            }
-
             btnDeleteNote.setOnClickListener {
                 onButtonClick(ButtonsClick.DELETE_NOTE)
                 alertDialog.dismiss()
             }
         }
+    }
+
+    fun showDefaultAlert(title: String, message: String, okButton: (Boolean) -> Unit){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+        builder
+            .setMessage(message)
+            .setTitle(title)
+            .setPositiveButton("ok") { _, _ ->
+                okButton.invoke(true)
+            }
+            .setNegativeButton("cancel") { _, _ ->
+
+            }
+            .setCancelable(false)
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 }

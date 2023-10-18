@@ -27,7 +27,7 @@ class AdapterNoteImagesFragment @Inject constructor(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), _deleteBtnClick)
 
         holder.itemView.setOnClickListener {
             if(position >= 0 && position < currentList.size) {
@@ -38,7 +38,7 @@ class AdapterNoteImagesFragment @Inject constructor(
     }
 
     class ViewHolder(private val glide: RequestManager, private val binding: ItemLayoutImagesBinding): RecyclerView.ViewHolder(binding.root){
-        fun bind(noteImage: NoteImage) = with(binding){
+        fun bind(noteImage: NoteImage, deleteBtnClick: (Int, Int, String) -> Unit) = with(binding){
             txtDescription.text = noteImage.description
             glide
                 .load(noteImage.imageFileUrl)
@@ -46,12 +46,21 @@ class AdapterNoteImagesFragment @Inject constructor(
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .transform(RoundedCorners(20))
                 .into(imgNoteImage)
+
+            btnDeleteImage.setOnClickListener {
+                deleteBtnClick.invoke(noteImage.rootID, noteImage.id, noteImage.imageFileUrl)
+            }
         }
     }
 
     private var _itemClick: (imagePath: String) -> Unit = {}
     fun itemClick(click: (imagePath: String) -> Unit){
         _itemClick = click
+    }
+
+    private var _deleteBtnClick: (noteId: Int, imageId: Int, imagePath: String) -> Unit = {_,_, _ ->}
+    fun deleteBtnClick(click: (noteId: Int, imageId: Int, imagePath: String) -> Unit){
+        _deleteBtnClick = click
     }
 
     private object DiffUtilImages: DiffUtil.ItemCallback<NoteImage>(){

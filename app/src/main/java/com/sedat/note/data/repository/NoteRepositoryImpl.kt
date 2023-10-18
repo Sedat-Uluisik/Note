@@ -78,11 +78,19 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteNote(id: Int) {
-        dao.deleteNote(id)
+        try {
+            dao.deleteNote(id)
+        }catch (_: Exception){
+
+        }
     }
 
     override suspend fun deleteRelationship(subId: Int) {
-        dao.deleteRelationship(subId)
+        try {
+            dao.deleteRelationship(subId)
+        }catch (_: Exception){
+
+        }
     }
 
     override suspend fun getNoteWithID(noteID: Int): Resource<Note> {
@@ -104,6 +112,18 @@ class NoteRepositoryImpl @Inject constructor(
                 Resource.Error(context.getString(R.string.note_update_is_not_successful))
         }catch (e: Exception){
             Resource.Error(context.getString(R.string.note_update_is_not_successful))
+        }
+    }
+
+    override suspend fun deleteNoteImagePathFromRoom(imageId: Int): Resource<Boolean> {
+        return try {
+            val result = dao.deleteNoteImagePathFromRoom(imageId)
+            if(result > 0)
+                Resource.Success(true)
+            else
+                Resource.Error(context.getString(R.string.image_is_not_delete))
+        }catch (_: Exception){
+            Resource.Error(context.getString(R.string.image_is_not_delete))
         }
     }
 
