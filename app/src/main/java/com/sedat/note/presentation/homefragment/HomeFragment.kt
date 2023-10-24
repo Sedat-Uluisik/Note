@@ -26,9 +26,12 @@ import com.sedat.note.presentation.homefragment.adapter.AdapterHomeFragment
 import com.sedat.note.presentation.homefragment.viewmodel.ViewModelHomeFragment
 import com.sedat.note.util.ButtonsClick
 import com.sedat.note.util.CustomAlert
+import com.sedat.note.util.afterTextChange
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -45,6 +48,7 @@ class HomeFragment : Fragment() {
     lateinit var adapter: AdapterHomeFragment
     private var selectedNoteID: Int = -2
     private var rootIDList: ArrayList<Int> = arrayListOf()
+    private var searchState = false
 
     private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissionss ->
@@ -121,6 +125,7 @@ class HomeFragment : Fragment() {
                             }
                             ButtonsClick.DELETE_NOTE ->{
                                 viewModel.deleteNoteAndSubNotes(note.id)
+                                viewModel.getSubNotes(note.id)
                             }
                             else ->{}
                         }
@@ -146,17 +151,36 @@ class HomeFragment : Fragment() {
             backBtnClick()
         }
 
+        var job: Job?= null
+        binding.serachEdittext.afterTextChange { txt ->
+            job?.cancel()
+            job = lifecycleScope.launch {
+                delay(500)
+                if (txt.isNotEmpty()) {
+                    viewModel.searchNote(txt)
+                    searchState = true
+                }
+                else {
+                    viewModel.getMainNotes()
+                    searchState = false
+                }
+            }
+
+        }
+
     }
 
     private fun observeData(){
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.noteList()
-                .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-                .distinctUntilChanged()
-                .debounce(500L)
-                .collect{
-                    adapter.submitList(it)
-                    binding.backBtnForSubNotes.hide()
+        if(!searchState){
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewModel.noteList()
+                    .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+                    .distinctUntilChanged()
+                    .debounce(500L)
+                    .collect{
+                        adapter.submitList(it)
+                        binding.backBtnForSubNotes.hide()
+                    }
             }
         }
 

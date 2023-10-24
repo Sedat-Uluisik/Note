@@ -28,15 +28,19 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
 
         holder.itemView.setOnClickListener {
             if(position >= 0 && position < currentList.size) {
-                if (getItem(position).subNoteCount > 0)
-                    _btnClick.invoke(getItem(position), ButtonsClick.RECYCLERVIEW_ITEM_CLICK)
+                _btnClick.invoke(getItem(position), ButtonsClick.RECYCLERVIEW_ITEM_CLICK)
             }
         }
     }
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(note: Note, btnClick: (note: Note, type: ButtonsClick) -> Unit) = with(binding){
-            noteText.text = note.text
+            if(note.text.length > 70){
+                val trimmedText = note.text.substring(0, 70) + "..."
+                noteText.text = trimmedText
+            }else
+                noteText.text = note.text
+
             noteTimeText.text = note.convertDate()
 
             if(note.subNoteCount > 0) {

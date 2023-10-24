@@ -6,6 +6,7 @@ import com.sedat.note.domain.database.Dao
 import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.domain.model.NoteImage
+import com.sedat.note.domain.model.NoteWithImages
 import com.sedat.note.domain.model.Relationships
 import com.sedat.note.domain.repository.NoteRepository
 import com.sedat.note.util.Resource
@@ -64,8 +65,12 @@ class NoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getSubNotesForDeleting(rootId: Int): List<Note> {
-        return dao.getSubNotesForDeleting(rootId).map { it.convertNoteDtoToNote() }
+    override suspend fun getSubNotesForDeleting(rootId: Int): List<NoteWithImages> {
+        return dao.getSubNotesForDeleting(rootId)
+    }
+
+    override suspend fun getMainNoteAndImagesForDeleting(noteId: Int): NoteWithImages {
+        return dao.getMainNoteAndImagesForDeleting(noteId)
     }
 
     override suspend fun getNoteImages(rootId: Int): Resource<List<NoteImage>> {
@@ -142,6 +147,15 @@ class NoteRepositoryImpl @Inject constructor(
             Resource.Success(result)
         }catch (e: Exception){
             Resource.Error(context.getString(R.string.note_saved_fail))
+        }
+    }
+
+    override suspend fun searchNote(searchQuery: String): Resource<List<Note>> {
+        return try {
+            val result = dao.searchNote(searchQuery)
+            Resource.Success(result)
+        }catch (e: Exception){
+            Resource.Error("")
         }
     }
 

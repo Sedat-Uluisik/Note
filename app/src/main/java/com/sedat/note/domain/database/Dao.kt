@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.domain.model.NoteImage
+import com.sedat.note.domain.model.NoteWithImages
 import com.sedat.note.domain.model.Relationships
 import kotlinx.coroutines.flow.Flow
 
@@ -47,7 +48,10 @@ interface Dao {
     suspend fun createRelationship(relationships: Relationships): Long?
 
     @Query("SELECT * FROM T_Notes WHERE rootID = :rootId")
-    suspend fun getSubNotesForDeleting(rootId: Int): List<NoteDto>
+    suspend fun getSubNotesForDeleting(rootId: Int): List<NoteWithImages>
+
+    @Query("SELECT * FROM T_Notes WHERE id = :noteId")
+    suspend fun getMainNoteAndImagesForDeleting(noteId: Int): NoteWithImages
 
     @Query("DELETE FROM T_Notes WHERE id = :id")
     suspend fun deleteNote(id: Int)
@@ -60,5 +64,11 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Long?
+
+    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
+            "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
+            "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
+            "FROM T_Notes AS Note WHERE Note.text LIKE '%' || :searchQuery || '%'")
+    suspend fun searchNote(searchQuery: String): List<Note>
 
 }
