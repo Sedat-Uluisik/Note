@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import com.sedat.note.R
 import com.sedat.note.databinding.ItemLayoutCustomAlertBinding
 
 class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) {
@@ -41,14 +42,14 @@ class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) 
     }
 
     fun showDefaultAlert(title: String, message: String, okButton: (Boolean) -> Unit){
-        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(context, R.style.AlertDialogTheme)
         builder
             .setMessage(message)
             .setTitle(title)
-            .setPositiveButton("ok") { _, _ ->
+            .setPositiveButton(context.getString(R.string.ok)) { _, _ ->
                 okButton.invoke(true)
             }
-            .setNegativeButton("cancel") { _, _ ->
+            .setNegativeButton(context.getString(R.string.cancel)) { _, _ ->
 
             }
             .setCancelable(false)

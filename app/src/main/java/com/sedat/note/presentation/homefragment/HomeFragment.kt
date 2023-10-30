@@ -124,8 +124,12 @@ class HomeFragment : Fragment() {
                                 findNavController().navigate(action)
                             }
                             ButtonsClick.DELETE_NOTE ->{
-                                viewModel.deleteNoteAndSubNotes(note.id)
-                                viewModel.getSubNotes(note.id)
+                                CustomAlert(requireContext()).showDefaultAlert(getString(R.string.delete), getString(R.string.is_delete_note)) {
+                                    if(it){
+                                        viewModel.deleteNoteAndSubNotes(note.id)
+                                        viewModel.getSubNotes(note.id)
+                                    }
+                                }
                             }
                             else ->{}
                         }

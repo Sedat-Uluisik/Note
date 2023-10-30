@@ -34,7 +34,10 @@
     <string name="this_note_is_has_sub_note">This note is has sub note</string>
     <string name="more_button">More button</string>
     <string name="close_image">Close Image</string>
-    <string name="delete">Sil</string>
-    <string name="is_delete_image">Resim silinsin mi?</string>
+    <string name="delete">Delete</string>
+    <string name="is_delete_image">Do you want to delete the image?</string>
+    <string name="is_delete_note">Would you like to delete the note? If so, any sub-notes and images associated with this note will also be deleted.</string>
     <string name="image_is_not_delete">Image is not delete</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -35,8 +35,8 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
 
     class ViewHolder(private val binding: LayoutNoteItemBinding): RecyclerView.ViewHolder(binding.root){
         fun bind(note: Note, btnClick: (note: Note, type: ButtonsClick) -> Unit) = with(binding){
-            if(note.text.length > 70){
-                val trimmedText = note.text.substring(0, 70) + "..."
+            if(note.text.length > 100){
+                val trimmedText = note.text.substring(0, 100) + "..."
                 noteText.text = trimmedText
             }else
                 noteText.text = note.text
