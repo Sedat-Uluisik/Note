@@ -7,6 +7,7 @@ plugins {
     id ("com.google.devtools.ksp")
 }
 
+@Suppress("UnstableApiUsage")
 android {
     namespace = "com.sedat.note"
     compileSdk = 34
@@ -29,6 +30,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -53,6 +55,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.test.espresso:espresso-contrib:3.5.1")
 
     // TestImplementations
     testImplementation("junit:junit:4.13.2")
@@ -99,10 +102,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
 
     //camera
-    implementation ("androidx.camera:camera-core:1.2.2")
-    implementation ("androidx.camera:camera-camera2:1.2.2")
-    implementation ("androidx.camera:camera-lifecycle:1.2.2")
-    implementation ("androidx.camera:camera-view:1.2.3")
+    implementation ("androidx.camera:camera-core:1.3.0")
+    implementation ("androidx.camera:camera-camera2:1.3.0")
+    implementation ("androidx.camera:camera-lifecycle:1.3.0")
+    implementation ("androidx.camera:camera-view:1.3.0")
+    implementation ("com.google.guava:guava:31.0.1-android")
 
     //glide
     implementation ("com.github.bumptech.glide:glide:4.16.0")

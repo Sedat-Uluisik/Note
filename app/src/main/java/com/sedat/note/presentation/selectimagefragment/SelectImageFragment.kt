@@ -1,24 +1,19 @@
 package com.sedat.note.presentation.selectimagefragment
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.Size
 import android.view.Display
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
-import android.view.WindowMetrics
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import androidx.camera.core.Camera
@@ -29,10 +24,10 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.snackbar.Snackbar.SnackbarLayout
 import com.google.common.util.concurrent.ListenableFuture
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentSelectImageBinding

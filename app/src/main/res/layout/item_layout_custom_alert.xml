@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:padding="8dp"
     android:gravity="center"
-    android:background="@drawable/custom_alert_dialog_background">
+    android:background="@drawable/custom_alert_dialog_background"
+    android:id="@+id/custom_alert_root_layout">
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_add_sub_category"

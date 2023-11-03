@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -32,7 +33,8 @@ class NoteImagesFragment : Fragment() {
     lateinit var adapter: AdapterNoteImagesFragment
     @Inject
     lateinit var glide: RequestManager
-    private val viewModel: ViewModelNoteImages by viewModels()
+    //private val viewModel: ViewModelNoteImages by viewModels()
+    lateinit var viewModel: ViewModelNoteImages //using for unit testing
     private val args: NoteImagesFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -45,6 +47,8 @@ class NoteImagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel = ViewModelProvider(requireActivity())[ViewModelNoteImages::class.java]
 
         initRecyclerView()
         observe()

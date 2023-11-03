@@ -121,14 +121,84 @@ class NoteDaoTestWithHilt {
     }
 
     @Test
-    fun `update_note_test`() = runTest{
+    fun `update_note_test_successful`() = runTest{
         val noteDto = NoteDto(1, -1, "test", 100000L)
         val noteDtoNew = NoteDto(1, -1, "test2", 200000L)
         dao.saveNote(noteDto)
-        dao.saveNote(noteDto2)
+        dao.updateNote(noteDtoNew.id, noteDtoNew.text, noteDtoNew.time)
 
-        val list = dao.getMainNotesV2()
-        val note = Note(1, -1, "test", 100000L, 0, 0)
-        assertThat(list).contains(note)
+        val newNoteDto = dao.getNoteWithID(1)
+        assertThat(noteDtoNew).isEqualTo(newNoteDto)
+    }
+
+    @Test
+    fun `get_sub_notes_and_images_for_deleting_fun_test_successful`() = runTest{
+        val subNote = NoteDto(4, 3, "subNote", 1000)
+        dao.saveNote(subNote)
+        val noteImage = NoteImage(1, 4, "image_url", "desc")
+        dao.saveImageFilePathToRoomDB(noteImage)
+
+        val subNotesAndImages = dao.getSubNotesForDeleting(3)
+
+        assertThat(subNotesAndImages.map { it.noteDto }).contains(subNote)
+        assertThat(subNotesAndImages.map { it.imageList }.first()).contains(noteImage)
+    }
+
+    @Test
+    fun `get_main_note_and_images_for_deleting_fun_successfull`() = runTest{
+        val mainNote = NoteDto(4, 3, "mainNote", 1000)
+        dao.saveNote(mainNote)
+        val noteImage = NoteImage(1, 4, "image_url", "desc")
+        dao.saveImageFilePathToRoomDB(noteImage)
+
+        val mainNoteAndImages = dao.getMainNoteAndImagesForDeleting(4)
+
+        assertThat(mainNoteAndImages.noteDto).isEqualTo(mainNote)
+        assertThat(mainNoteAndImages.imageList).contains(noteImage)
+    }
+
+    @Test
+    fun `delete_note_test_successful`() = runTest{
+        val noteDto = NoteDto(88, -1, "txt" , 1000)
+        dao.saveNote(noteDto)
+        dao.deleteNote(88)
+
+        val noteList = dao.getMainNotesV2().map { it.id }
+        assertThat(noteList).doesNotContain(noteDto.id)
+    }
+
+    //---------------------------------------------------------------------------
+
+    @Test
+    fun `save_and_delete_note_image_path_from_db_fun_successfull`() = runTest{
+        val mainNote = NoteDto(4, 3, "mainNote", 1000)
+        dao.saveNote(mainNote)
+        val noteImage = NoteImage(1, 4, "image_url", "desc")
+        val noteImage2 = NoteImage(2, 4, "image_url_2", "desc_2")
+        dao.saveImageFilePathToRoomDB(noteImage)
+        dao.saveImageFilePathToRoomDB(noteImage2)
+        dao.deleteNoteImagePathFromRoom(1)
+
+        val mainNoteAndImages = dao.getMainNoteAndImagesForDeleting(4)
+
+        assertThat(mainNoteAndImages.imageList).contains(noteImage2)
+        assertThat(mainNoteAndImages.imageList).doesNotContain(noteImage)
+    }
+
+    @Test
+    fun `searching_test_successful`() = runTest{
+        val mainNote = NoteDto(4, 3, "mainNote", 1000)
+        dao.saveNote(mainNote)
+        val noteImage = NoteImage(1, 4, "image_url", "desc")
+        val noteImage2 = NoteImage(2, 4, "image_url_2", "desc_2")
+        dao.saveImageFilePathToRoomDB(noteImage)
+        dao.saveImageFilePathToRoomDB(noteImage2)
+
+        val searchList = dao.searchNote("main")
+
+        val expectedNote = Note(4, 3, "mainNote", 1000, 0, 2)
+
+        assertThat(searchList).contains(expectedNote)
+
     }
 }

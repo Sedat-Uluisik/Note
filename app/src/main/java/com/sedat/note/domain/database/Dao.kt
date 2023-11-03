@@ -68,7 +68,9 @@ interface Dao {
     @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
             "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
             "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
-            "FROM T_Notes AS Note WHERE Note.text LIKE '%' || :searchQuery || '%'")
+            "FROM T_Notes AS Note " +
+            "LEFT JOIN T_NoteImage ON T_NoteImage.rootID = Note.id " +
+            "WHERE Note.text LIKE '%' || :searchQuery || '%' OR T_NoteImage.description LIKE '%' || :searchQuery || '%'")
     suspend fun searchNote(searchQuery: String): List<Note>
 
 }
