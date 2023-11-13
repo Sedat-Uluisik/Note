@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.selectimagefragment.SelectImageFragment">
+    tools:context=".presentation.selectimagefragment.SelectImageFragment"
+    android:id="@+id/select_image_fragment_root_layout">
 
     <androidx.camera.view.PreviewView
         android:id="@+id/view_finder"

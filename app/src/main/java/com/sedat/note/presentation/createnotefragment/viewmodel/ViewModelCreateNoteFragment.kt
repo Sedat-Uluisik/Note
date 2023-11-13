@@ -1,11 +1,9 @@
 package com.sedat.note.presentation.createnotefragment.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sedat.note.R
 import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteDto
 import com.sedat.note.domain.model.Relationships

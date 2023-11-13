@@ -33,8 +33,7 @@ class NoteImagesFragment : Fragment() {
     lateinit var adapter: AdapterNoteImagesFragment
     @Inject
     lateinit var glide: RequestManager
-    //private val viewModel: ViewModelNoteImages by viewModels()
-    lateinit var viewModel: ViewModelNoteImages //using for unit testing
+    private val viewModel: ViewModelNoteImages by viewModels()
     private val args: NoteImagesFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -47,8 +46,6 @@ class NoteImagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel = ViewModelProvider(requireActivity())[ViewModelNoteImages::class.java]
 
         initRecyclerView()
         observe()

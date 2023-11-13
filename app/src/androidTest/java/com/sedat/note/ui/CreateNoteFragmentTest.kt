@@ -9,8 +9,11 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
+import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -21,6 +24,8 @@ import com.sedat.note.presentation.createnotefragment.CreateNoteFragment
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -95,5 +100,20 @@ class CreateNoteFragmentTest {
         }
 
         Espresso.onView(withId(R.id.edt_note)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun `save_button_is_visible_when_i_write_text_to_edittext`() = runTest{
+        val navController = Mockito.mock(NavController::class.java)
+
+        val args = bundleOf("type" to ActionType.CREATE_NEW_NOTE, "selected_note_id" to 1)
+
+        launchFragmentInHiltContainer<CreateNoteFragment>(args) {
+            Navigation.setViewNavController(requireView(), navController)
+        }
+
+        onView(withId(R.id.edt_note)).perform(typeText("adda"), closeSoftKeyboard())
+
+        onView(withId(R.id.saveBtn)).check(matches(isDisplayed()))
     }
 }

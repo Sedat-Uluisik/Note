@@ -44,6 +44,11 @@ class ViewModelNoteImagesTest {
         (NoteImage(1, 1, "url_1", "desc_1"))
         (NoteImage(2, 1, "url_2", "desc_2"))
         (NoteImage(3, 2, "url_3", "desc_3"))
+        -------------------------------------------- after delete
+        (NoteImage(1, 1, "url_1", "desc_1"))
+        (NoteImage(3, 2, "url_3", "desc_3"))
+        ------------------------------------------- expected data
+        (NoteImage(1, 1, "url_1", "desc_1"))
          */
 
         val noteImage = NoteImage(1, 1, "url_1", "desc_1")

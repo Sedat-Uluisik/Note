@@ -6,7 +6,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="4dp"
-    tools:context=".presentation.noteimagesfragment.NoteImagesFragment">
+    tools:context=".presentation.noteimagesfragment.NoteImagesFragment"
+    android:id="@+id/note_images_fragment_root_layout">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_images"

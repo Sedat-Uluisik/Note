@@ -8,6 +8,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -159,13 +160,12 @@ class HomeFragment : Fragment() {
             job?.cancel()
             job = lifecycleScope.launch {
                 delay(500)
-                if (txt.isNotEmpty()) {
+                searchState = if (txt.isNotEmpty()) {
                     viewModel.searchNote(txt)
-                    searchState = true
-                }
-                else {
+                    true
+                } else {
                     viewModel.getMainNotes()
-                    searchState = false
+                    false
                 }
             }
 
@@ -183,18 +183,27 @@ class HomeFragment : Fragment() {
                     .collect{
                         adapter.submitList(it)
                         binding.backBtnForSubNotes.hide()
+
+                        println("-----------------------------")
                     }
             }
         }
 
         viewModel.subNoteList.observe(viewLifecycleOwner){
-            adapter.submitList(it)
-            if(rootIDList.size > 0)
-                binding.backBtnForSubNotes.show()
+            it.getContentIfNotHandled()?.let { list ->
+                if(list.isNotEmpty()){
+                    adapter.submitList(list)
+                    if(rootIDList.size > 0)
+                        binding.backBtnForSubNotes.show()
+
+                    println("**********************************")
+                }
+            }
         }
     }
 
     private fun backBtnClick(){
+        println(rootIDList.size)
         if(rootIDList.size == 1){
             rootIDList.clear()
             binding.backBtnForSubNotes.hide()

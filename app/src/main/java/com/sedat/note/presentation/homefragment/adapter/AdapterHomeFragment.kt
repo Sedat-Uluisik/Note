@@ -82,4 +82,6 @@ class AdapterHomeFragment @Inject constructor(): ListAdapter<Note, AdapterHomeFr
         }
     }
 
+
+
 }

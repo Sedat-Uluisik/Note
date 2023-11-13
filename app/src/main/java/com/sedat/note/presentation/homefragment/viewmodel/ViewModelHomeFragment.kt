@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sedat.note.domain.model.Note
 import com.sedat.note.domain.model.NoteWithImages
 import com.sedat.note.domain.repository.NoteRepository
+import com.sedat.note.util.Event
 import com.sedat.note.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,24 +23,26 @@ class ViewModelHomeFragment @Inject constructor(
 
     fun noteList() = repository.getMainNotes()
 
-    private var _subNoteList = MutableLiveData<List<Note>>()
-    val subNoteList: LiveData<List<Note>> get() = _subNoteList
+    private var _subNoteList = MutableLiveData<Event<List<Note>>>()
+    val subNoteList: LiveData<Event<List<Note>>> get() = _subNoteList
     fun getSubNotes(rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
+        println("subnotes")
         val data = repository.getSubNotes(rootID)
         withContext(Dispatchers.Main){
-            _subNoteList.postValue(data)
+            _subNoteList.postValue(Event(data))
         }
     }
 
     fun getMainNotes() = viewModelScope.launch(Dispatchers.IO) {
+        println("mainnotes")
         val result = repository.getMainNotesV2()
         withContext(Dispatchers.Main){
             when(result){
                 is Resource.Success ->{
-                    _subNoteList.postValue(result.data ?: listOf())
+                    _subNoteList.postValue(Event(result.data ?: listOf()))
                 }
                 else ->{
-                    _subNoteList.postValue(listOf())
+                    _subNoteList.postValue(Event(listOf()))
                 }
             }
         }
@@ -88,14 +91,15 @@ class ViewModelHomeFragment @Inject constructor(
     }
 
     fun searchNote(searchQuery: String) = viewModelScope.launch(Dispatchers.IO) {
+        println("search")
         val result = repository.searchNote(searchQuery)
         withContext(Dispatchers.Main){
             when(result){
                 is Resource.Success ->{
-                    _subNoteList.postValue(result.data ?: listOf())
+                    _subNoteList.postValue(Event(result.data ?: listOf()))
                 }
                 else ->{
-                    _subNoteList.postValue(listOf())
+                    _subNoteList.postValue(Event(listOf()))
                 }
             }
         }
