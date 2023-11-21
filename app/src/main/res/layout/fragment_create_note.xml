@@ -6,6 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/lightBlue"
    android:padding="8dp"
+    android:id="@+id/root_layout"
     tools:context=".presentation.createnotefragment.CreateNoteFragment">
 
     <ImageView
@@ -18,6 +19,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="@string/back_btn" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_colors"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/backBtn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:listitem="@layout/layout_colors"/>
 
     <ImageView
         android:id="@+id/saveBtn"
@@ -37,10 +50,10 @@
         android:layout_height="wrap_content"
         android:text="@string/title"
         android:layout_marginTop="12dp"
-        android:textColor="@color/grey"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/backBtn"
+        app:layout_constraintTop_toBottomOf="@id/recycler_colors"
         app:layout_constraintStart_toStartOf="@id/backBtn"/>
 
     <EditText
@@ -51,6 +64,7 @@
         android:gravity="top|left"
         android:background="@android:color/transparent"
         android:inputType="textMultiLine"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

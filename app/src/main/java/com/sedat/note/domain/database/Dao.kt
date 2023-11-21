@@ -17,13 +17,13 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun saveNote(note: NoteDto): Long?
 
-    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
+    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time, Note.color," +
             "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
             "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
             "FROM T_Notes AS Note WHERE Note.rootID = -1")
     fun getMainNotes(): Flow<List<Note>>
 
-    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
+    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time, Note.color," +
             "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
             "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
             "FROM T_Notes AS Note WHERE Note.rootID = -1")
@@ -32,7 +32,7 @@ interface Dao {
     @Query("SELECT * FROM T_Notes WHERE id = :noteID")
     suspend fun getNoteWithID(noteID: Int): NoteDto
 
-    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
+    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time, Note.color," +
             "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
             "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
             "FROM T_Notes AS Note WHERE Note.rootID = :rootID")
@@ -41,8 +41,8 @@ interface Dao {
     @Query("SELECT * FROM T_NoteImage WHERE rootID = :rootId")
     suspend fun getNoteImages(rootId: Int): List<NoteImage>
 
-    @Query("UPDATE T_Notes SET text = :text, time = :time WHERE id = :id")
-    suspend fun updateNote(id: Int, text: String, time: Long): Int?
+    @Query("UPDATE T_Notes SET text = :text, time = :time, color = :color WHERE id = :id")
+    suspend fun updateNote(id: Int, text: String, time: Long, color: String): Int?
 
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun createRelationship(relationships: Relationships): Long?
@@ -65,7 +65,7 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Long?
 
-    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time," +
+    @Query("SELECT  Note.id, Note.rootID, Note.text, Note.time, Note.color," +
             "(SELECT COUNT(id) from T_Relationships WHERE rootID = Note.id ) AS subNoteCount, " +
             "(SELECT COUNT(id) from T_NoteImage WHERE rootID = Note.id ) AS imageCount  " +
             "FROM T_Notes AS Note " +

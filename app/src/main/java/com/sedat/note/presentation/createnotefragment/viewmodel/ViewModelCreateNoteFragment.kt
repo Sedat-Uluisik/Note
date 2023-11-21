@@ -49,9 +49,9 @@ class ViewModelCreateNoteFragment @Inject constructor(
     * liveData'nın değerini UI Thread ile güncellemek daha güvenlidir.
      */
 
-    fun updateNote(id: Int, text: String, time: Long) = viewModelScope.launch(Dispatchers.IO) {
+    fun updateNote(id: Int, text: String, time: Long, color: String) = viewModelScope.launch(Dispatchers.IO) {
         _isSaveSuccessful.postValue(Resource.Loading())
-        val result = repository.updateNote(id, text, time)
+        val result = repository.updateNote(id, text, time, color)
         withContext(Dispatchers.Main){
             _isSaveSuccessful.postValue(result)
         }

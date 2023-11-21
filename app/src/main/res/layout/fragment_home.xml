@@ -62,7 +62,7 @@
             android:id="@+id/backBtnForSubNotes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_back_32"
+            android:src="@drawable/ic_back_black_32"
             android:visibility="gone"
             android:layout_marginTop="8dp"
             android:padding="4dp"

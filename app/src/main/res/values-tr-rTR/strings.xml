@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Not</string>
+    <string name="hello_blank_fragment">Fragment</string>
+    <string name="search">Ara</string>
+    <string name="create_note">Not Oluştur</string>
+    <string name="search_icon">Ara İkonu</string>
+    <string name="back_button_for_categories">Geri Butonu</string>
+    <string name="back_btn">Geri Butonu</string>
+    <string name="save_btn">Kaydet</string>
+    <string name="title">Başlık</string>
+    <string name="note_saved_fail">Note Kaydedilemedi</string>
+    <string name="add_sub_category">Alt Not Ekle</string>
+    <string name="add_image">Resim Ekle</string>
+    <string name="selected_note_not_found">Not Bulunamadı</string>
+    <string name="note_update_is_not_successful">Not Güncellemesi Yapılamadı</string>
+    <string name="update_note">Notu Güncelle</string>
+    <string name="delete_note">Notu Sil</string>
+    <string name="permission_required">Kamera ve Depolama İzni Gerekli</string>
+    <string name="permission_required_from_app_settings">Uygulama ayarlarından Kamera ve Depolama İznini Vermeniz Gerekiyor</string>
+    <string name="get_image">Resimleri Getir</string>
+    <string name="cancel_image">Resim İptal</string>
+    <string name="select_image">Resim Seç</string>
+    <string name="note_is_not_selected">Not Seçilemedi</string>
+    <string name="image_path_not_save_to_room_db">Resim Kaydetme Başarısız</string>
+    <string name="error">Hata</string>
+    <string name="try_again">Tekrar Dene</string>
+    <string name="selection_failed_please_try_again">Seçme İşlemi Yapılamadı, Lütfen Tekrar Deneyiniz!</string>
+    <string name="image_could_not_be_saved_to_file">Resim Kaydetme İşlemi Başarısız!</string>
+    <string name="description">Açıklama</string>
+    <string name="note_could_be_not_found">Not Bulunamadı</string>
+    <string name="there_was_a_problem_retrieving_the_images">Resimler Getirilemedi</string>
+    <string name="image_zoom">Resim Yakınlaştırma</string>
+    <string name="this_note_is_has_image">Bu Nota Ait Resim Bulunmakta</string>
+    <string name="this_note_is_has_sub_note">Bu Nota Ait Alt Not Bulunmakta</string>
+    <string name="more_button">Daha Fazla</string>
+    <string name="close_image">Kapat</string>
+    <string name="delete">Sil</string>
+    <string name="is_delete_image">Resmi silmek istediğine emin misin?</string>
+    <string name="is_delete_note">Notu silmek istediğine emin misin? Bu nota ait varsa alt notlar ve resimler dahil her şey silinecek.</string>
+    <string name="image_is_not_delete">Resim Silinemedi</string>
+    <string name="ok">Tamam</string>
+    <string name="cancel">İptal</string>
+    <string name="color">Renk</string>
+</resources>

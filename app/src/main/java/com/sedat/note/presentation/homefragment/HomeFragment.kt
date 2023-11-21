@@ -1,14 +1,18 @@
 package com.sedat.note.presentation.homefragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
+import android.view.Window
+import android.view.WindowManager
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.sedat.note.R
 import com.sedat.note.databinding.FragmentHomeBinding
 import com.sedat.note.domain.model.ActionType
+import com.sedat.note.domain.model.Note
 import com.sedat.note.presentation.homefragment.adapter.AdapterHomeFragment
 import com.sedat.note.presentation.homefragment.viewmodel.ViewModelHomeFragment
 import com.sedat.note.util.ButtonsClick
@@ -98,6 +103,10 @@ class HomeFragment : Fragment() {
         listeners()
         observeData()
         onBackPressed()
+
+        val window: Window = requireActivity().window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.parseColor("#EFEFEF")
     }
 
     private fun initRecyclerView() = with(binding){
@@ -110,10 +119,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(action)
         }
 
-        adapter.moreBtnClick {note, type ->
+        adapter.moreBtnClick {view, note, type ->
             when(type){
                 ButtonsClick.MORE ->{
-                    CustomAlert(requireContext()).showCustomAlert {
+                    /*CustomAlert(requireContext()).showCustomAlert {
                         when(it){
                             ButtonsClick.ADD_IMAGE ->{
                                 selectedNoteID = note.id
@@ -133,7 +142,8 @@ class HomeFragment : Fragment() {
                             }
                             else ->{}
                         }
-                    }
+                    }*/
+                    popupMenuForMoreButton(view, note)
                 }
                 ButtonsClick.SHOW_SUB_NOTES ->{
                     rootIDList.add(note.rootID)
@@ -183,8 +193,6 @@ class HomeFragment : Fragment() {
                     .collect{
                         adapter.submitList(it)
                         binding.backBtnForSubNotes.hide()
-
-                        println("-----------------------------")
                     }
             }
         }
@@ -195,8 +203,6 @@ class HomeFragment : Fragment() {
                     adapter.submitList(list)
                     if(rootIDList.size > 0)
                         binding.backBtnForSubNotes.show()
-
-                    println("**********************************")
                 }
             }
         }
@@ -238,6 +244,46 @@ class HomeFragment : Fragment() {
         ).setAction("Retry") {
             permissionRequestLauncher.launch(permissionList)
         }.show()
+    }
+
+    @SuppressLint("DiscouragedPrivateApi")
+    fun popupMenuForMoreButton(view: View, note: Note){
+        val popupMenu = PopupMenu(requireContext(), view)
+        val inflater = popupMenu.menuInflater
+        inflater.inflate(R.menu.popup_menu, popupMenu.menu)
+
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.add_sub_note ->{
+                    val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(ActionType.ADD_SUB_NOTE, selectedNoteId = note.id)
+                    findNavController().navigate(action)
+                }
+                R.id.add_image ->{
+                    selectedNoteID = note.id
+                    permissionRequestLauncher.launch(permissionList)
+                }
+                R.id.delete_note ->{
+                    CustomAlert(requireContext()).showDefaultAlert(getString(R.string.delete), getString(R.string.is_delete_note)) {
+                        if(it){
+                            viewModel.deleteNoteAndSubNotes(note.id)
+                            viewModel.getSubNotes(note.id)
+                        }
+                    }
+                }
+            }
+            return@setOnMenuItemClickListener true
+        }
+
+        try {
+            val popup = PopupMenu::class.java.getDeclaredField("mPopup")
+            popup.isAccessible = true
+            val menu = popup.get(popupMenu)
+            menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
+        }catch (e: Exception){
+            e.printStackTrace()
+        }finally {
+            popupMenu.show()
+        }
     }
 
     override fun onDestroyView() {

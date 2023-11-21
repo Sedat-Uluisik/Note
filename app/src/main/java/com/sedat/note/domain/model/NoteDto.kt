@@ -13,9 +13,10 @@ data class NoteDto(
     var id: Int,
     var rootID: Int,
     var text: String,
-    var time: Long
+    var time: Long,
+    var color: String
 ){
     fun convertNoteDtoToNote(): Note{
-        return Note(id, rootID, text, time)
+        return Note(id = id, rootID = rootID, text = text, time = time, color = color)
     }
 }

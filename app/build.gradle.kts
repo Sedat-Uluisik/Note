@@ -95,6 +95,7 @@ dependencies {
     ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
     ksp("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.5.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     //coil
     implementation("io.coil-kt:coil:2.4.0")

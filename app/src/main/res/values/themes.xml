@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.Note" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:statusBarColor" >@color/blue</item>
+        <item name="android:statusBarColor" >#EFEFEF</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu</item>
     </style>
     <style name="Theme.Note" parent="Base.Theme.Note" />
 
@@ -15,5 +16,9 @@
 
     <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textColor">#D52A2A</item>
+    </style>
+
+    <style name="PopupMenu" parent="@android:style/Widget.PopupMenu">
+        <item name="android:popupBackground">@color/white</item>
     </style>
 </resources>

@@ -107,9 +107,9 @@ class NoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateNote(id: Int, _text: String, _time: Long): Resource<Boolean> {
+    override suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Boolean> {
         return try {
-            val result = dao.updateNote(id, _text, _time)
+            val result = dao.updateNote(id, _text, _time, color)
             println(result)
             if(result != null)
                 Resource.Success(true)

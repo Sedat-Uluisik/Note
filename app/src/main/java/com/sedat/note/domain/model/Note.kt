@@ -8,6 +8,7 @@ data class Note(var id: Int = 0,
                  var rootID: Int = 0,
                  var text: String = "",
                  var time: Long = 0L,
+                val color: String = "",
                  val subNoteCount: Int = 0,
                  val imageCount: Int = 0
 ){
