@@ -44,6 +44,8 @@ class CreateNoteFragment : Fragment() {
     private val viewModel: ViewModelCreateNoteFragment by viewModels()
     private val args: CreateNoteFragmentArgs by navArgs()
 
+    private var createdNoteID: Int ?= null
+
     @Inject
     lateinit var adapterColors: AdapterColors
     private var noteItemBackGroundColor: IntArray = gradientColors().first()
@@ -91,9 +93,15 @@ class CreateNoteFragment : Fragment() {
             if(args.type == ActionType.UPDATE_NOTE && args.selectedNoteId != -1)
                 updateCurrentNote(binding.edtNote.text.toString())
             else if(args.type == ActionType.CREATE_NEW_NOTE)
-                createNewNote(binding.edtNote.text.toString())
+                if(createdNoteID == null)
+                    createNewNote(binding.edtNote.text.toString())
+                else
+                    updateCurrentNote(binding.edtNote.text.toString())
             else if(args.type == ActionType.ADD_SUB_NOTE && args.selectedNoteId != -1)
-                addSubNote(binding.edtNote.text.toString(), args.selectedNoteId)
+                if(createdNoteID == null)
+                    addSubNote(binding.edtNote.text.toString(), args.selectedNoteId)
+                else
+                    updateCurrentNote(binding.edtNote.text.toString())
         }
 
         adapterColors.itemClick {
@@ -110,7 +118,9 @@ class CreateNoteFragment : Fragment() {
     }
 
     private fun updateCurrentNote(_text: String){
-        if(args.selectedNoteId != -1 && _text.isNotEmpty())
+        if(createdNoteID != null && _text.isNotEmpty())
+            viewModel.updateNote(createdNoteID!!, _text, System.currentTimeMillis(), TypeConverter().toString(noteItemBackGroundColor))
+        else if(args.selectedNoteId != -1 && _text.isNotEmpty())
             viewModel.updateNote(args.selectedNoteId, _text, System.currentTimeMillis(), TypeConverter().toString(noteItemBackGroundColor))
     }
 
@@ -126,6 +136,10 @@ class CreateNoteFragment : Fragment() {
             when(resource){
                 is Resource.Loading -> progressbar.show()
                 is Resource.Success ->{
+
+                     if((args.type == ActionType.ADD_SUB_NOTE || args.type == ActionType.CREATE_NEW_NOTE) && createdNoteID == null)
+                         createdNoteID = resource.data?.toInt()
+
                     saveBtn.hide()
                     progressbar.hide()
                     requireActivity().closeKeyboard()
@@ -135,6 +149,7 @@ class CreateNoteFragment : Fragment() {
                     progressbar.hide()
                     requireActivity().closeKeyboard()
                 }
+                else -> {}
             }
         }
 
@@ -145,6 +160,7 @@ class CreateNoteFragment : Fragment() {
                     resource.data?.let {
                         binding.edtNote.setText(it.text)
                         setGradientColor(TypeConverter().fromString(it.color))
+                        noteItemBackGroundColor = TypeConverter().fromString(it.color)
                     } ?: Toast.makeText(requireContext(), getString(R.string.selected_note_not_found), Toast.LENGTH_LONG).show()
 
                 }

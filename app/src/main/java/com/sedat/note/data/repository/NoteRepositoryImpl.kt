@@ -20,13 +20,13 @@ class NoteRepositoryImpl @Inject constructor(
     val dao: Dao,
     val context: Context
     ): NoteRepository {
-    override suspend fun saveNote(note: NoteDto): Flow<Resource<Boolean>> {
+    override suspend fun saveNote(note: NoteDto): Flow<Resource<Long?>> {
         return flow {
             emit(Resource.Loading())
             try {
                 val result = dao.saveNote(note)
                 if(result != null)
-                    emit(Resource.Success((true)))
+                    emit(Resource.Success(result))
                 else
                     emit(Resource.Error(context.getString(R.string.note_saved_fail)))
             }catch (e: Exception){
@@ -107,12 +107,14 @@ class NoteRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Boolean> {
+    override suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Int> {
         return try {
             val result = dao.updateNote(id, _text, _time, color)
-            println(result)
             if(result != null)
-                Resource.Success(true)
+                if(result > 0)
+                    Resource.Success(result)
+                else
+                    Resource.Error(context.getString(R.string.note_update_is_not_successful))
             else
                 Resource.Error(context.getString(R.string.note_update_is_not_successful))
         }catch (e: Exception){

@@ -9,7 +9,7 @@ import com.sedat.note.util.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface NoteRepository {
-    suspend fun saveNote(note: NoteDto): Flow<Resource<Boolean>>
+    suspend fun saveNote(note: NoteDto): Flow<Resource<Long?>>
     suspend fun saveImageFilePathToRoomDB(noteImage: NoteImage): Resource<Boolean>
     fun getMainNotes(): Flow<List<Note>>
 
@@ -26,7 +26,7 @@ interface NoteRepository {
 
     suspend fun getNoteWithID(noteID: Int): Resource<Note>
 
-    suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Boolean>
+    suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Int>
     suspend fun deleteNoteImagePathFromRoom(imageId: Int): Resource<Boolean>
 
     suspend fun saveSubNote(note: NoteDto): Resource<Long?>

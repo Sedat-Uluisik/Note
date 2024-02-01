@@ -21,8 +21,8 @@ class ViewModelCreateNoteFragment @Inject constructor(
     private val repository: NoteRepository
 ) : ViewModel() {
 
-    private val _isSaveSuccessful = MutableLiveData<Resource<Boolean>>()
-    val isSaveSuccessful: LiveData<Resource<Boolean>> get() = _isSaveSuccessful
+    private val _isSaveSuccessful = MutableLiveData<Resource<Long?>>()
+    val isSaveSuccessful: LiveData<Resource<Long?>> get() = _isSaveSuccessful
 
     fun saveNote(note: NoteDto) = viewModelScope.launch(Dispatchers.IO) {
         repository.saveNote(note).collect {
@@ -53,7 +53,13 @@ class ViewModelCreateNoteFragment @Inject constructor(
         _isSaveSuccessful.postValue(Resource.Loading())
         val result = repository.updateNote(id, text, time, color)
         withContext(Dispatchers.Main){
-            _isSaveSuccessful.postValue(result)
+
+            when(result){
+                is Resource.Success ->{
+                    _isSaveSuccessful.postValue(Resource.Success(1L))
+                }
+                else -> _isSaveSuccessful.postValue(Resource.Error(result.message))
+            }
         }
     }
 
@@ -70,9 +76,9 @@ class ViewModelCreateNoteFragment @Inject constructor(
 
             withContext(Dispatchers.Main){
                 if(createRelationship.data != null)
-                    _isSaveSuccessful.value = Resource.Success(true)
+                    _isSaveSuccessful.postValue(Resource.Success(it))
                 else
-                    _isSaveSuccessful.value = Resource.Success(false)
+                    _isSaveSuccessful.postValue(Resource.Error(saveNote.message ?: createRelationship.message))
             }
         }
     }

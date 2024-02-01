@@ -42,4 +42,6 @@
     <string name="ok">Tamam</string>
     <string name="cancel">İptal</string>
     <string name="color">Renk</string>
+    <string name="gallery">Galeri</string>
+    <string name="camera">Kamera</string>
 </resources>
