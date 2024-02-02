@@ -53,5 +53,9 @@
             android:name="noteId"
             app:argType="integer"
             android:defaultValue="-2" />
+        <argument
+            android:name="type"
+            app:argType="com.sedat.note.util.ButtonsClick"
+            android:defaultValue="IMAGE_FOR_GALLERY" />
     </fragment>
 </navigation>

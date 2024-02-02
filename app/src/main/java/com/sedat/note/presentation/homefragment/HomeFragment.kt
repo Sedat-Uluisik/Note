@@ -2,6 +2,7 @@ package com.sedat.note.presentation.homefragment
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -53,19 +54,22 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var adapter: AdapterHomeFragment
     private var selectedNoteID: Int = -2
+    private var typeForImageSelectMode: Boolean = true //true -> gallery, false -> camera
     private var rootIDList: ArrayList<Int> = arrayListOf()
     private var searchState = false
 
-    private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
     private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissionss ->
         val permissionCamera = permissionss.getValue(Manifest.permission.CAMERA)
         val permissionStorage = permissionss.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        if(permissionCamera && permissionStorage){
-            /*Navigation.findNavController(requireActivity(), R.id.nav_host)
-                .navigate(R.id.selectImageFragment, null, null)*/
+        val permissionStorageRead = permissionss.getValue(Manifest.permission.READ_EXTERNAL_STORAGE)
+        if(permissionCamera && permissionStorage && permissionStorageRead){
 
            if(selectedNoteID != -2){
-               val action = HomeFragmentDirections.actionHomeFragmentToSelectImageFragment(noteId = selectedNoteID)
+               val action = HomeFragmentDirections.actionHomeFragmentToSelectImageFragment(
+                   noteId = selectedNoteID,
+                   type = if(typeForImageSelectMode) ButtonsClick.IMAGE_FOR_GALLERY else ButtonsClick.IMAGE_FOR_CAMERA
+               )
                selectedNoteID = -2
                findNavController().navigate(action)
            }else
@@ -252,7 +256,7 @@ class HomeFragment : Fragment() {
         val inflater = popupMenu.menuInflater
         inflater.inflate(R.menu.popup_menu, popupMenu.menu)
 
-        popupMenu.setOnMenuItemClickListener {
+        popupMenu.setOnMenuItemClickListener { it ->
             when(it.itemId){
                 R.id.add_sub_note ->{
                     val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(ActionType.ADD_SUB_NOTE, selectedNoteId = note.id)
@@ -260,7 +264,20 @@ class HomeFragment : Fragment() {
                 }
                 R.id.add_image ->{
                     selectedNoteID = note.id
-                    permissionRequestLauncher.launch(permissionList)
+                    //permissionRequestLauncher.launch(permissionList)
+                    CustomAlert(requireContext()).showAlertForImageSelect { buttonsClick ->
+                        when(buttonsClick){
+                            ButtonsClick.IMAGE_FOR_GALLERY ->{
+                                typeForImageSelectMode = true
+                                permissionRequestLauncher.launch(permissionList)
+                            }
+                            ButtonsClick.IMAGE_FOR_CAMERA ->{
+                                typeForImageSelectMode = false
+                                permissionRequestLauncher.launch(permissionList)
+                            }
+                            else ->{}
+                        }
+                    }
                 }
                 R.id.delete_note ->{
                     CustomAlert(requireContext()).showDefaultAlert(getString(R.string.delete), getString(R.string.is_delete_note)) {

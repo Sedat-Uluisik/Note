@@ -1,9 +1,8 @@
 package com.sedat.note.util
 
 enum class ButtonsClick {
-    ADD_SUB_NOTE,
-    ADD_IMAGE,
-    DELETE_NOTE,
+    IMAGE_FOR_GALLERY,
+    IMAGE_FOR_CAMERA,
     SHOW_SUB_NOTES,
     SHOW_IMAGE,
     MORE,

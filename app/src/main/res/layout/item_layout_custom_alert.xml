@@ -1,37 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="8dp"
+    android:padding="16dp"
     android:gravity="center"
-    android:background="@android:color/transparent"
+    android:background="@drawable/custom_alert_dialog_background"
     android:id="@+id/custom_alert_root_layout">
 
-    <androidx.appcompat.widget.AppCompatButton
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btn_gallery"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/gallery"
-        android:textSize="15sp"
-        android:textAllCaps="false"
-        android:padding="5dp"
-        android:textColor="@color/blue_light"
-        android:background="@drawable/btn_green_background"
-        android:drawableStart="@drawable/ic_add_subcaregory_24"/>
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/btn_blue_background"
+        app:layout_constraintStart_toStartOf="@id/guidelineStart"
+        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_add_image"
-        android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineChildStart1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.20" />
+
+        <ImageView
+            android:id="@+id/img_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_image_24"
+            app:layout_constraintStart_toStartOf="@id/guidelineChildStart1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/gallery" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/gallery"
+            android:textColor="@color/blue_light"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp"
+            app:layout_constraintStart_toEndOf="@id/img_gallery"
+            app:layout_constraintTop_toTopOf="@id/img_gallery"
+            app:layout_constraintBottom_toBottomOf="@id/img_gallery"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/btn_camera"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/camera"
-        android:textSize="15sp"
-        android:textAllCaps="false"
-        android:padding="5dp"
-        android:layout_marginTop="4dp"
-        android:textColor="@color/blue_light"
-        android:drawableStart="@drawable/ic_add_photo_alternate_24"
-        android:background="@drawable/btn_green_background" />
+        android:orientation="horizontal"
+        android:padding="14dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/btn_blue_background"
+        app:layout_constraintStart_toStartOf="@id/guidelineStart"
+        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+        app:layout_constraintTop_toBottomOf="@id/btn_gallery">
 
-</LinearLayout>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidelineChildStart2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.20" />
+
+        <ImageView
+            android:id="@+id/img_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_camera_24"
+            app:layout_constraintStart_toStartOf="@id/guidelineChildStart2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:contentDescription="@string/camera"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/camera"
+            android:textColor="@color/blue_light"
+            android:textSize="18sp"
+            android:layout_marginStart="4dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/img_camera"
+            app:layout_constraintTop_toTopOf="@id/img_camera"
+            app:layout_constraintBottom_toBottomOf="@id/img_camera"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

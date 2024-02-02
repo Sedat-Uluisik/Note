@@ -11,7 +11,7 @@ class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) 
 
     private lateinit var onButtonClick: (click: ButtonsClick) -> Unit
 
-    fun showCustomAlert(click: (click: ButtonsClick) -> Unit){
+    fun showAlertForImageSelect(click: (click: ButtonsClick) -> Unit){
         val view = ItemLayoutCustomAlertBinding.inflate(LayoutInflater.from(_context))
         val builder = AlertDialog.Builder(_context)
         builder.setView(view.root)
@@ -24,18 +24,13 @@ class CustomAlert(private val _context: Context): AlertDialog.Builder(_context) 
         alertDialog.show()
 
         with(view){
-            btnAddSubCategory.setOnClickListener {
-                onButtonClick(ButtonsClick.ADD_SUB_NOTE)
+            btnCamera.setOnClickListener {
+                onButtonClick(ButtonsClick.IMAGE_FOR_CAMERA)
                 alertDialog.dismiss()
             }
 
-            btnAddImage.setOnClickListener {
-                onButtonClick(ButtonsClick.ADD_IMAGE)
-                alertDialog.dismiss()
-            }
-
-            btnDeleteNote.setOnClickListener {
-                onButtonClick(ButtonsClick.DELETE_NOTE)
+            btnGallery.setOnClickListener {
+                onButtonClick(ButtonsClick.IMAGE_FOR_GALLERY)
                 alertDialog.dismiss()
             }
         }
