@@ -42,7 +42,11 @@ class ViewModelNoteImages @Inject constructor(
                 }
             }
         }
+    }
 
+    fun updateDesc(id: Int, text: String) = viewModelScope.launch(Dispatchers.IO) {
+        if(!text.isNullOrBlank())
+            repository.updateNoteImageDesc(id, text)
     }
 
 }

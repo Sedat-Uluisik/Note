@@ -44,6 +44,9 @@ interface Dao {
     @Query("UPDATE T_Notes SET text = :text, time = :time, color = :color WHERE id = :id")
     suspend fun updateNote(id: Int, text: String, time: Long, color: String): Int?
 
+    @Query("UPDATE T_NoteImage SET description = :desc WHERE id = :id")
+    suspend fun updateNoteImageDesc(id: Int, desc: String): Int?
+
     @Insert(onConflict = OnConflictStrategy.NONE)
     suspend fun createRelationship(relationships: Relationships): Long?
 

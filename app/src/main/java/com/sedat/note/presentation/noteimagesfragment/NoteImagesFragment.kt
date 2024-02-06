@@ -75,6 +75,10 @@ class NoteImagesFragment : Fragment() {
             }
         }
 
+        adapter.updateItemDesc { id, txt ->
+            viewModel.updateDesc(id, txt)
+        }
+
         binding.btnCloseImage.setOnClickListener{
             binding.imgZoom.setImageDrawable(null)
             binding.imgZoom.resetZoom()

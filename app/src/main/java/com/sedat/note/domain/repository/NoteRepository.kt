@@ -27,6 +27,7 @@ interface NoteRepository {
     suspend fun getNoteWithID(noteID: Int): Resource<Note>
 
     suspend fun updateNote(id: Int, _text: String, _time: Long, color: String): Resource<Int>
+    suspend fun updateNoteImageDesc(id: Int, desc: String): Resource<Int?>
     suspend fun deleteNoteImagePathFromRoom(imageId: Int): Resource<Boolean>
 
     suspend fun saveSubNote(note: NoteDto): Resource<Long?>

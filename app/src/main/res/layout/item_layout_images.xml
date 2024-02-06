@@ -17,15 +17,40 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
-        android:id="@+id/txt_description"
+    <LinearLayout
+        android:id="@+id/layout_desc"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        tools:text="Image Description"
-        android:gravity="center"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:visibility="visible"
+        android:gravity="center_vertical"
+        android:background="@drawable/btn_blue_background"
         app:layout_constraintStart_toStartOf="@id/img_note_image"
         app:layout_constraintEnd_toEndOf="@id/img_note_image"
-        app:layout_constraintTop_toBottomOf="@id/img_note_image"/>
+        app:layout_constraintTop_toBottomOf="@id/img_note_image">
+
+        <ImageView
+            android:id="@+id/img_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_edit_20"
+            android:padding="4dp"/>
+
+        <EditText
+            android:id="@+id/txt_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="Image Description"
+            android:gravity="start"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:background="@android:color/transparent"
+            app:layout_constraintStart_toStartOf="@id/img_note_image"
+            app:layout_constraintEnd_toEndOf="@id/img_note_image"
+            app:layout_constraintTop_toBottomOf="@id/img_note_image"/>
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/btn_delete_image"

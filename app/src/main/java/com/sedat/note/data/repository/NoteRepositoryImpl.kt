@@ -122,6 +122,21 @@ class NoteRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateNoteImageDesc(id: Int, desc: String): Resource<Int?> {
+        return try {
+            val result = dao.updateNoteImageDesc(id, desc)
+            if(result != null)
+                if(result > 0)
+                    Resource.Success(result)
+                else
+                    Resource.Error(context.getString(R.string.note_update_is_not_successful))
+            else
+                Resource.Error(context.getString(R.string.note_update_is_not_successful))
+        }catch (e: Exception){
+            Resource.Error(context.getString(R.string.note_update_is_not_successful))
+        }
+    }
+
     override suspend fun deleteNoteImagePathFromRoom(imageId: Int): Resource<Boolean> {
         return try {
             val result = dao.deleteNoteImagePathFromRoom(imageId)
