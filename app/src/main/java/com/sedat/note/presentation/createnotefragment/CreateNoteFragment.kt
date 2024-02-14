@@ -107,6 +107,9 @@ class CreateNoteFragment : Fragment() {
         adapterColors.itemClick {
             setGradientColor(it)
             noteItemBackGroundColor = it
+
+            if(binding.edtNote.text.isNotEmpty())
+                saveBtn.show()
         }
     }
 

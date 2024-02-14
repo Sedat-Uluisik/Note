@@ -2,7 +2,6 @@ package com.sedat.note.presentation.homefragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -17,7 +16,6 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -55,7 +53,6 @@ class HomeFragment : Fragment() {
     lateinit var adapter: AdapterHomeFragment
     private var selectedNoteID: Int = -2
     private var typeForImageSelectMode: Boolean = true //true -> gallery, false -> camera
-    private var rootIDList: ArrayList<Int> = arrayListOf()
     private var searchState = false
 
     private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -150,8 +147,7 @@ class HomeFragment : Fragment() {
                     popupMenuForMoreButton(view, note)
                 }
                 ButtonsClick.SHOW_SUB_NOTES ->{
-                    rootIDList.add(note.rootID)
-                    viewModel.getSubNotes(note.id)
+                    viewModel.insertRootIdFromRootIDList(note.id)
                 }
                 ButtonsClick.SHOW_IMAGE ->{
                     val action = HomeFragmentDirections.actionHomeFragmentToNoteImagesFragment(noteID = note.id)
@@ -166,7 +162,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.backBtnForSubNotes.setOnClickListener {
-            backBtnClick()
+            viewModel.deleteLastRootIdFromRootIDList()
         }
 
         var job: Job?= null
@@ -178,7 +174,6 @@ class HomeFragment : Fragment() {
                     viewModel.searchNote(txt)
                     true
                 } else {
-                    viewModel.getMainNotes()
                     false
                 }
             }
@@ -188,7 +183,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun observeData(){
-        if(!searchState){
+        if(!searchState && viewModel.rootIDList.value?.peekContent()?.isEmpty() != false){
             viewLifecycleOwner.lifecycleScope.launch {
                 viewModel.noteList()
                     .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
@@ -196,7 +191,6 @@ class HomeFragment : Fragment() {
                     .debounce(500L)
                     .collect{
                         adapter.submitList(it)
-                        binding.backBtnForSubNotes.hide()
                     }
             }
         }
@@ -205,28 +199,22 @@ class HomeFragment : Fragment() {
             it.getContentIfNotHandled()?.let { list ->
                 if(list.isNotEmpty()){
                     adapter.submitList(list)
-                    if(rootIDList.size > 0)
-                        binding.backBtnForSubNotes.show()
-                }
+                }else
+                    viewModel.deleteLastRootIdFromRootIDList()
             }
         }
-    }
 
-    private fun backBtnClick(){
-        println(rootIDList.size)
-        if(rootIDList.size == 1){
-            rootIDList.clear()
-            binding.backBtnForSubNotes.hide()
-            viewModel.getMainNotes()
-        }
-        else{
-            if(rootIDList.isEmpty() && binding.backBtnForSubNotes.isVisible)
-                binding.backBtnForSubNotes.hide()
-            else if(rootIDList.isEmpty() && !binding.backBtnForSubNotes.isVisible)
-                requireActivity().finish()
-            else{
-                viewModel.getSubNotes(rootIDList.last())
-                rootIDList.removeLast()
+        viewModel.rootIDList.observe(viewLifecycleOwner){
+            it.peekContent().let { list ->
+                println(list)
+                if(list.isEmpty()) {
+                    binding.backBtnForSubNotes.hide()
+                    viewModel.getMainNotes()
+                }
+                else{
+                    binding.backBtnForSubNotes.show()
+                    viewModel.getSubNotes(list.last())
+                }
             }
         }
     }
@@ -234,7 +222,7 @@ class HomeFragment : Fragment() {
     private fun onBackPressed() {
         val onBackPressCallBack = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                backBtnClick()
+                viewModel.deleteLastRootIdFromRootIDList()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressCallBack)
@@ -282,8 +270,8 @@ class HomeFragment : Fragment() {
                 R.id.delete_note ->{
                     CustomAlert(requireContext()).showDefaultAlert(getString(R.string.delete), getString(R.string.is_delete_note)) {
                         if(it){
-                            viewModel.deleteNoteAndSubNotes(note.id)
-                            viewModel.getSubNotes(note.id)
+                            viewModel.deleteNoteAndSubNotes(note.id, note.rootID)
+                            //viewModel.getSubNotes(note.id)
                         }
                     }
                 }

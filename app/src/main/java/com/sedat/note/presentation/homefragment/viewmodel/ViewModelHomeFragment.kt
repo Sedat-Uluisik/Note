@@ -25,6 +25,24 @@ class ViewModelHomeFragment @Inject constructor(
 
     private var _subNoteList = MutableLiveData<Event<List<Note>>>()
     val subNoteList: LiveData<Event<List<Note>>> get() = _subNoteList
+
+    private var _rootIDList = MutableLiveData<Event<ArrayList<Int>>>()
+    val rootIDList: LiveData<Event<ArrayList<Int>>> get() = _rootIDList
+
+    fun insertRootIdFromRootIDList(id: Int) = viewModelScope.launch{
+        val hold = rootIDList.value?.getContentIfNotHandled() ?: arrayListOf()
+        hold.add(id)
+        _rootIDList.postValue(Event(hold))
+    }
+
+    fun deleteLastRootIdFromRootIDList() = viewModelScope.launch{
+        val hold = rootIDList.value?.getContentIfNotHandled()
+        hold?.let {
+            it.removeLast()
+            _rootIDList.postValue(Event(it))
+        } ?: _rootIDList.postValue(Event(arrayListOf()))
+    }
+
     fun getSubNotes(rootID: Int) = viewModelScope.launch(Dispatchers.IO) {
         println("subnotes")
         val data = repository.getSubNotes(rootID)
@@ -48,7 +66,7 @@ class ViewModelHomeFragment @Inject constructor(
         }
     }
 
-    fun deleteNoteAndSubNotes(noteIdToDelete: Int) = viewModelScope.launch(Dispatchers.IO){
+    fun deleteNoteAndSubNotes(noteIdToDelete: Int, rootId: Int) = viewModelScope.launch(Dispatchers.IO){
         val subNotes = mutableListOf<NoteWithImages>()
         val stack = mutableListOf(noteIdToDelete)
 
@@ -58,6 +76,9 @@ class ViewModelHomeFragment @Inject constructor(
             subNotes.addAll(subNoteIds)
             stack.addAll(subNoteIds.map { it.noteDto.id })
         }
+
+        if(subNotes.isEmpty())
+            repository.deleteRelationship(noteIdToDelete)
 
         //delete all sub notes
         subNotes.forEach {note ->
@@ -76,6 +97,8 @@ class ViewModelHomeFragment @Inject constructor(
             deleteImageFile(it.imageFileUrl)
         }
         repository.deleteNote(noteIdToDelete)
+
+        getSubNotes(rootId)
     }
 
     private fun deleteImageFile(imagePath: String){

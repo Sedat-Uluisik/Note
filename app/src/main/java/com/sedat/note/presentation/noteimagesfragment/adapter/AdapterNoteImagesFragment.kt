@@ -96,10 +96,12 @@ class AdapterNoteImagesFragment @Inject constructor(
                 if(imgDesc.tag == R.drawable.ic_save_20){
 
                     imgDesc.setImageResource(R.drawable.ic_edit_20)
-
+                    txtDescription.isEnabled = false
                     updateItemDesc.invoke(noteImage.id, txtDescription.text.toString())
-                }else
+                }else {
+                    txtDescription.isEnabled = true
                     txtDescription.requestFocus()
+                }
             }
         }
     }
