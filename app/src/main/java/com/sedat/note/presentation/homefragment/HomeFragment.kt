@@ -204,6 +204,12 @@ class HomeFragment : Fragment() {
             }
         }
 
+        viewModel.mainNoteList.observe(viewLifecycleOwner){
+            it.getContentIfNotHandled()?.let { list ->
+                adapter.submitList(list)
+            }
+        }
+
         viewModel.rootIDList.observe(viewLifecycleOwner){
             it.peekContent().let { list ->
                 println(list)

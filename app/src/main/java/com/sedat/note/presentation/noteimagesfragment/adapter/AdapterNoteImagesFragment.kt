@@ -4,7 +4,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -14,7 +15,6 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.sedat.note.R
 import com.sedat.note.databinding.ItemLayoutImagesBinding
 import com.sedat.note.domain.model.NoteImage
-import com.sedat.note.util.afterTextChange
 import com.sedat.note.util.hide
 import com.sedat.note.util.show
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +23,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 class AdapterNoteImagesFragment @Inject constructor(
     private val glide: RequestManager
@@ -68,6 +69,13 @@ class AdapterNoteImagesFragment @Inject constructor(
                 deleteBtnClick.invoke(noteImage.rootID, noteImage.id, noteImage.imageFileUrl)
             }
 
+            val anim: Animation = AlphaAnimation(0.0f, 1.0f)
+            anim.duration = 500 //You can manage the blinking time with this parameter
+
+            anim.startOffset = 20
+            anim.repeatMode = Animation.REVERSE
+            anim.repeatCount = Animation.INFINITE
+
             txtDescription.addTextChangedListener(object : TextWatcher{
 
                 var job: Job ?= null
@@ -85,6 +93,8 @@ class AdapterNoteImagesFragment @Inject constructor(
 
                             imgDesc.setImageResource(R.drawable.ic_save_20)
                             imgDesc.tag = R.drawable.ic_save_20
+                            imgDesc.clearAnimation()
+                            imgDesc.startAnimation(anim)
                         }
                     }else
                         job?.cancel()
@@ -97,6 +107,7 @@ class AdapterNoteImagesFragment @Inject constructor(
 
                     imgDesc.setImageResource(R.drawable.ic_edit_20)
                     txtDescription.isEnabled = false
+                    imgDesc.clearAnimation()
                     updateItemDesc.invoke(noteImage.id, txtDescription.text.toString())
                 }else {
                     txtDescription.isEnabled = true

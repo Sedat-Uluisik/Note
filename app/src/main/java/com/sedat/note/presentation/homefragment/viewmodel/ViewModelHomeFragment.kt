@@ -26,6 +26,9 @@ class ViewModelHomeFragment @Inject constructor(
     private var _subNoteList = MutableLiveData<Event<List<Note>>>()
     val subNoteList: LiveData<Event<List<Note>>> get() = _subNoteList
 
+    private var _mainNoteList = MutableLiveData<Event<List<Note>>>()
+    val mainNoteList: LiveData<Event<List<Note>>> get() = _mainNoteList
+
     private var _rootIDList = MutableLiveData<Event<ArrayList<Int>>>()
     val rootIDList: LiveData<Event<ArrayList<Int>>> get() = _rootIDList
 
@@ -38,8 +41,11 @@ class ViewModelHomeFragment @Inject constructor(
     fun deleteLastRootIdFromRootIDList() = viewModelScope.launch{
         val hold = rootIDList.value?.getContentIfNotHandled()
         hold?.let {
-            it.removeLast()
-            _rootIDList.postValue(Event(it))
+            if(it.isNotEmpty()){
+                it.removeLast()
+                _rootIDList.postValue(Event(it))
+            }else
+                _rootIDList.postValue(Event(arrayListOf()))
         } ?: _rootIDList.postValue(Event(arrayListOf()))
     }
 
@@ -47,6 +53,7 @@ class ViewModelHomeFragment @Inject constructor(
         println("subnotes")
         val data = repository.getSubNotes(rootID)
         withContext(Dispatchers.Main){
+            println(data)
             _subNoteList.postValue(Event(data))
         }
     }
@@ -57,10 +64,10 @@ class ViewModelHomeFragment @Inject constructor(
         withContext(Dispatchers.Main){
             when(result){
                 is Resource.Success ->{
-                    _subNoteList.postValue(Event(result.data ?: listOf()))
+                    _mainNoteList.postValue(Event(result.data ?: listOf()))
                 }
                 else ->{
-                    _subNoteList.postValue(Event(listOf()))
+                    _mainNoteList.postValue(Event(listOf()))
                 }
             }
         }

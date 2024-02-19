@@ -119,6 +119,9 @@ class SelectImageFragment : Fragment() {
             processCameraProviderFuture.addListener( {
                 processCameraProvider = processCameraProviderFuture.get()
                 binding.viewFinder.post { setupCamera() }
+                if (!processCameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+                    binding.btnChangeCamera.hide()
+                }
             }, ContextCompat.getMainExecutor(requireContext()))
         }
 
@@ -169,7 +172,9 @@ class SelectImageFragment : Fragment() {
             setupCamera()
             binding.btnDoneSelectImage.hide()
             binding.btnDontSelectImage.hide()
-            binding.btnChangeCamera.show()
+            if (processCameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)) {
+                binding.btnChangeCamera.show()
+            }
         }
 
         binding.btnChangeCamera.setOnClickListener {
@@ -204,7 +209,8 @@ class SelectImageFragment : Fragment() {
                     binding.btnDontSelectImage.hide()
                     if(args.type == ButtonsClick.IMAGE_FOR_CAMERA){
                         setupCamera()
-                        binding.btnChangeCamera.show()
+                        if (processCameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA))
+                            binding.btnChangeCamera.show()
                     }
                     binding.edtImageNote.setText("")
                 }
