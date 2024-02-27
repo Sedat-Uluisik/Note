@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -228,7 +229,10 @@ class HomeFragment : Fragment() {
     private fun onBackPressed() {
         val onBackPressCallBack = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                viewModel.deleteLastRootIdFromRootIDList()
+                if((viewModel.rootIDList.value?.peekContent()?.size ?: -1) > 0)
+                    viewModel.deleteLastRootIdFromRootIDList()
+                else
+                    exitProcess(1)
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressCallBack)

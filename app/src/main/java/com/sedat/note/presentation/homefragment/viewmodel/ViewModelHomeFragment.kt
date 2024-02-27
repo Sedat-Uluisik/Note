@@ -103,6 +103,7 @@ class ViewModelHomeFragment @Inject constructor(
             repository.deleteNoteImagePathFromRoom(it.id)
             deleteImageFile(it.imageFileUrl)
         }
+        repository.deleteRelationship(noteIdToDelete)
         repository.deleteNote(noteIdToDelete)
 
         getSubNotes(rootId)
