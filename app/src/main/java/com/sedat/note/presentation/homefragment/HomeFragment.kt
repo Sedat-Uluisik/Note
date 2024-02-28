@@ -167,18 +167,24 @@ class HomeFragment : Fragment() {
         }
 
         var job: Job?= null
-        binding.serachEdittext.afterTextChange { txt ->
+        binding.searchEdittext.afterTextChange { txt ->
             job?.cancel()
             job = lifecycleScope.launch {
                 delay(500)
                 searchState = if (txt.isNotEmpty()) {
+                    binding.clearImgBtn.show()
                     viewModel.searchNote(txt)
                     true
                 } else {
                     false
                 }
             }
+        }
 
+        binding.clearImgBtn.setOnClickListener {
+            binding.searchEdittext.setText("")
+            it.hide()
+            viewModel.getMainNotes()
         }
 
     }

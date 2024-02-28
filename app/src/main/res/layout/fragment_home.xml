@@ -34,17 +34,26 @@
                 android:hint="@string/search"
                 app:hintTextColor="@color/blue"
                 android:layout_weight="1"
-                android:padding="5dp"
-                app:endIconMode="clear_text">
+                android:padding="5dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/serachEdittext"
+                    android:id="@+id/searchEdittext"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:padding="5dp"
                     android:background="@android:color/transparent"/>
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/clear_img_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="6dp"
+                android:visibility="gone"
+                android:src="@drawable/ic_cancel_24"
+                android:contentDescription="@string/search_icon" />
 
             <ImageView
                 android:id="@+id/search_icon"
