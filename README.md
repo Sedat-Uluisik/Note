@@ -1,4 +1,4 @@
-# Note
+# Note App
  
 ### Methods used in this project
 
