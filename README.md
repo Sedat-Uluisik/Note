@@ -7,8 +7,9 @@
 √ MVVM <br/>
 √ Coroutines <br/>
 √ Room Database <br/>
-√ UI/Unit Testing <br/>
 √ Glide <br/>
+√ UI/Unit Testing <br/>
+√ Google Crashlytics <br/>
 
 
 **--- App Images ---** <br/> <br/>
