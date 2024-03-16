@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Not</string>
+    <string name="app_name">Notlarım</string>
     <string name="hello_blank_fragment">Fragment</string>
     <string name="search">Ara</string>
     <string name="create_note">Not Oluştur</string>

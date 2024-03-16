@@ -90,7 +90,7 @@ class HomeFragmentTest {
             )
         )
 
-        Espresso.onView(ViewMatchers.withId(R.id.serachEdittext)).check(
+        Espresso.onView(ViewMatchers.withId(R.id.searchEdittext)).check(
             ViewAssertions.matches(
                 ViewMatchers.isDisplayed()
             )

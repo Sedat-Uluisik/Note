@@ -9,7 +9,7 @@
         android:id="@+id/homeFragment"
         android:name="com.sedat.note.presentation.homefragment.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_createNoteFragment"
             app:destination="@id/createNoteFragment" />
@@ -24,38 +24,38 @@
         android:id="@+id/createNoteFragment"
         android:name="com.sedat.note.presentation.createnotefragment.CreateNoteFragment"
         android:label="fragment_create_note"
-        tools:layout="@layout/fragment_create_note" >
+        tools:layout="@layout/fragment_create_note">
         <argument
             android:name="type"
-            app:argType="com.sedat.note.domain.model.ActionType"
-            android:defaultValue="CREATE_NEW_NOTE" />
+            android:defaultValue="CREATE_NEW_NOTE"
+            app:argType="com.sedat.note.domain.model.ActionType" />
         <argument
             android:name="selected_note_id"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/noteImagesFragment"
         android:name="com.sedat.note.presentation.noteimagesfragment.NoteImagesFragment"
         android:label="fragment_note_images"
-        tools:layout="@layout/fragment_note_images" >
+        tools:layout="@layout/fragment_note_images">
         <argument
             android:name="noteID"
-            app:argType="integer"
-            android:defaultValue="-2" />
+            android:defaultValue="-2"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/selectImageFragment"
         android:name="com.sedat.note.presentation.selectimagefragment.SelectImageFragment"
         android:label="fragment_select_image"
-        tools:layout="@layout/fragment_select_image" >
+        tools:layout="@layout/fragment_select_image">
         <argument
             android:name="noteId"
-            app:argType="integer"
-            android:defaultValue="-2" />
+            android:defaultValue="-2"
+            app:argType="integer" />
         <argument
             android:name="type"
-            app:argType="com.sedat.note.util.ButtonsClick"
-            android:defaultValue="IMAGE_FOR_GALLERY" />
+            android:defaultValue="IMAGE_FOR_GALLERY"
+            app:argType="com.sedat.note.util.ButtonsClick" />
     </fragment>
 </navigation>

@@ -26,7 +26,16 @@
 -keep class com.sedat.note.domain.database.NoteDatabase.** { *; }
 -keep class com.sedat.note.domain.database.Dao.** { *; }
 
--keep class com.sedat.note.domain.model.** { *; }
+-keep class com.sedat.note.domain.** { *; }
+-keep class com.sedat.note.data.repository.** { *; }
+-keep class com.sedat.note.util.** { *; }
+
+-keepnames class androidx.navigation.fragment.NavHostFragment
+-keep class * extends androidx.fragment.app.Fragment{}
+
+-keepclassmembers,allowobfuscation class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
 
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
