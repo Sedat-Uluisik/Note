@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -56,38 +58,51 @@ class HomeFragment : Fragment() {
     private var typeForImageSelectMode: Boolean = true //true -> gallery, false -> camera
     private var searchState = false
 
-    private val permissionList = arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-    private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissionss ->
-        val permissionCamera = permissionss.getValue(Manifest.permission.CAMERA)
-        val permissionStorage = permissionss.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        val permissionStorageRead = permissionss.getValue(Manifest.permission.READ_EXTERNAL_STORAGE)
-        if(permissionCamera && permissionStorage && permissionStorageRead){
+    private val permissionList = arrayOf(
+        Manifest.permission.CAMERA,
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            Manifest.permission.READ_MEDIA_IMAGES
+        else
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
+    )
 
-           if(selectedNoteID != -2){
-               val action = HomeFragmentDirections.actionHomeFragmentToSelectImageFragment(
-                   noteId = selectedNoteID,
-                   type = if(typeForImageSelectMode) ButtonsClick.IMAGE_FOR_GALLERY else ButtonsClick.IMAGE_FOR_CAMERA
-               )
-               selectedNoteID = -2
-               findNavController().navigate(action)
-           }else
-               Toast.makeText(requireContext(), getString(R.string.note_is_not_selected), Toast.LENGTH_LONG).show()
-        }
-        else{
-            if(!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) || !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                Snackbar.make(
-                    binding.root,
-                    getString(R.string.permission_required_from_app_settings),
-                    Snackbar.LENGTH_LONG
-                ).setAction("Retry") {
-                    val intent = Intent()
-                    intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                    val uri = Uri.fromParts("package", requireActivity().packageName, null)
-                    intent.data = uri
-                    this.startActivity(intent)
-                }.show()
-            }else
-                displayErrorMessageForPermission()
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissions ->
+
+        val permissionCamera = permissions.getValue(Manifest.permission.CAMERA)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            val permissionStorage2 = permissions.getValue(Manifest.permission.READ_MEDIA_IMAGES)
+
+            if(permissionCamera || permissionStorage2){
+                moveToSelectImageFragment()
+            }
+            else{
+                if(
+                    !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
+                    !shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES)
+                )
+                    showSnackbarForErrorPermission()
+                else
+                    displayErrorMessageForPermission()
+            }
+        }else{
+
+            val permissionStorage = permissions.getValue(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            val permissionStorageRead = permissions.getValue(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+            if(permissionCamera && permissionStorage && permissionStorageRead){
+                moveToSelectImageFragment()
+            }
+            else{
+                if(
+                    !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
+                    !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                )
+                    showSnackbarForErrorPermission()
+                else
+                    displayErrorMessageForPermission()
+            }
         }
     }
 
@@ -99,6 +114,7 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
@@ -115,6 +131,7 @@ class HomeFragment : Fragment() {
         recylerNote.adapter = adapter
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun listeners(){
         binding.fab.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToCreateNoteFragment(ActionType.CREATE_NEW_NOTE)
@@ -244,6 +261,7 @@ class HomeFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPressCallBack)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun displayErrorMessageForPermission() {
         Snackbar.make(
             binding.root,
@@ -254,6 +272,7 @@ class HomeFragment : Fragment() {
         }.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("DiscouragedPrivateApi")
     fun popupMenuForMoreButton(view: View, note: Note){
         val popupMenu = PopupMenu(requireContext(), view)
@@ -305,6 +324,32 @@ class HomeFragment : Fragment() {
         }finally {
             popupMenu.show()
         }
+    }
+
+    private fun moveToSelectImageFragment(){
+        if(selectedNoteID != -2){
+            val action = HomeFragmentDirections.actionHomeFragmentToSelectImageFragment(
+                noteId = selectedNoteID,
+                type = if(typeForImageSelectMode) ButtonsClick.IMAGE_FOR_GALLERY else ButtonsClick.IMAGE_FOR_CAMERA
+            )
+            selectedNoteID = -2
+            findNavController().navigate(action)
+        }else
+            Toast.makeText(requireContext(), getString(R.string.note_is_not_selected), Toast.LENGTH_LONG).show()
+    }
+
+    private fun showSnackbarForErrorPermission(){
+        Snackbar.make(
+            binding.root,
+            getString(R.string.permission_required_from_app_settings),
+            Snackbar.LENGTH_LONG
+        ).setAction("Retry") {
+            val intent = Intent()
+            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+            val uri = Uri.fromParts("package", requireActivity().packageName, null)
+            intent.data = uri
+            this.startActivity(intent)
+        }.show()
     }
 
     override fun onDestroyView() {
