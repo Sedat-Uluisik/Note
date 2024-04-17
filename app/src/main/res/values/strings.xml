@@ -43,4 +43,6 @@
     <string name="color">Color</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+    <string name="delete_image">Delete Image</string>
+    <string name="write">Write...</string>
 </resources>

@@ -44,4 +44,6 @@
     <string name="color">Renk</string>
     <string name="gallery">Galeri</string>
     <string name="camera">Kamera</string>
+    <string name="delete_image">Resimi Sil</string>
+    <string name="write">Yaz...</string>
 </resources>

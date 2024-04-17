@@ -44,31 +44,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="@string/save_btn" />
 
-    <TextView
-        android:id="@+id/txt_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/title"
-        android:layout_marginTop="12dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@id/recycler_colors"
-        app:layout_constraintStart_toStartOf="@id/backBtn"/>
-
     <EditText
         android:id="@+id/edt_note"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="18dp"
         android:gravity="top|left"
+        android:hint="@string/write"
         android:background="@android:color/transparent"
         android:inputType="textMultiLine"
         android:textColor="@color/white"
+        android:textColorHint="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_title"/>
+        app:layout_constraintTop_toBottomOf="@+id/recycler_colors"/>
 
     <ProgressBar
         android:id="@+id/progressbar"
